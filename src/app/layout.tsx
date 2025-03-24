@@ -13,7 +13,7 @@ const rubik = Rubik({
 
 export const metadata: Metadata = {
 	title: 'haydns.website',
-	description: 'A website for some stuff and some things.',
+	description: 'My website for some stuff and some things.',
 };
 
 type RootLayoutProps = {
