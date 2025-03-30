@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 
-import { PhysicsTypeGame } from './lib/physics-type';
+import { PhysicsTypeGame } from './lib/game';
 
 export const PhysicsTypeModule = {
 	name: 'Physics Type',

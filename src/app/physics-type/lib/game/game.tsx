@@ -14,8 +14,8 @@ import {
 import { useEffect, useRef } from 'react';
 import seedColour from 'seed-color';
 
+import styles from './game.module.css';
 import * as Keys from './lib/consts';
-import styles from './physics-type.module.css';
 
 export const SPECIAL_WORDS = [
 	{
