@@ -10,13 +10,15 @@ export default function Page() {
 		<main className="h-full w-full overflow-hidden flex flex-col">
 			<div className="flex flex-col p-4 items-start gap-2">
 				<div className="flex flex-col">
-					<h1 className="text-2xl font-bold">haydns.website</h1>
-					<p className="text-sm">just a collection of stuff and things</p>
+					<h1 className="text-2xl font-bold md:text-4xl">haydns.website</h1>
+					<p className="text-sm md:text-lg">
+						just a collection of stuff and things
+					</p>
 				</div>
 				<Socials />
 			</div>
 
-			<div className="grid grid-cols-1 grid-rows-18 sm:grid-cols-2 md:grid-cols-4 md:grid-rows-9 2xl:grid-cols-6 xl:grid-rows-6 flex-1 p-4 pt-0 gap-2">
+			<div className="grid grid-cols-1 grid-rows-18 sm:grid-cols-2 md:grid-cols-4 md:grid-rows-9 2xl:grid-cols-6 xl:grid-rows-6 flex-1 p-4 pt-0 gap-4">
 				{modules.map((module) => (
 					<article
 						key={module.path}

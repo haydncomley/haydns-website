@@ -4,7 +4,7 @@ import classNames from 'classnames';
 import JSConfetti from 'js-confetti';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import { Block } from '../block';
 import { LEVELS } from '../consts';
@@ -19,6 +19,8 @@ export const Level = ({ level }: LevelProps) => {
 	const router = useRouter();
 	const levelDetails = LEVELS[level - 1];
 	const nextLevelDetails = LEVELS[level];
+
+	const boardRef = useRef<HTMLDivElement>(null);
 
 	const [levelState, setLevelState] = useState(levelDetails.layout);
 	const [isChaining, setIsChaining] = useState(false);
@@ -159,6 +161,35 @@ export const Level = ({ level }: LevelProps) => {
 		return () => abortController.abort();
 	}, [blocksInChain.length, isChaining]);
 
+	useEffect(() => {
+		console.log('Hello worlrd');
+		if (!boardRef.current) return;
+
+		const checkBoardWidth = () => {
+			if (!boardRef.current) return;
+			const currentWidth = boardRef.current.clientWidth;
+			const percentage = currentWidth / window.innerWidth;
+
+			if (percentage > 1) {
+				boardRef.current.style.transform = `scale(${2 - percentage - 0.1})`;
+			} else {
+				boardRef.current.style.transform = 'scale(1)';
+			}
+		};
+
+		const mutationObserver = new MutationObserver(() => {
+			checkBoardWidth();
+		});
+
+		mutationObserver.observe(boardRef.current, {
+			childList: true,
+			subtree: true,
+		});
+		checkBoardWidth();
+
+		return () => mutationObserver.disconnect();
+	}, [boardRef]);
+
 	return (
 		<div className="flex flex-col gap-2">
 			<div className="absolute flex flex-col top-4 left-1/2 -translate-x-1/2 items-center gap-2 md:top-1/8">
@@ -181,9 +212,13 @@ export const Level = ({ level }: LevelProps) => {
 
 			<div className="flex flex-col relative items-center justify-center">
 				<div
-					className={classNames('flex flex-col gap-2 p-2 transition-all', {
-						'blur-md opacity-50 pointer-events-none': isLevelCompleted,
-					})}
+					ref={boardRef}
+					className={classNames(
+						'flex flex-col gap-2 transition-all origin-center',
+						{
+							'blur-md opacity-50 pointer-events-none': isLevelCompleted,
+						},
+					)}
 				>
 					{levelState.map((row, rowIndex) => (
 						<div

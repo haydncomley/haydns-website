@@ -24,12 +24,12 @@ const SOCIALS = [
 ];
 
 export const Socials = () => (
-	<div className="flex items-center justify-center gap-3">
+	<div className="flex items-center justify-center gap-4">
 		{SOCIALS.map((social) => (
 			<a
 				title={social.label}
 				className={classNames(
-					'flex items-center justify-center w-5 h-5 hover:scale-125 hover:opacity-80 hover:-rotate-6 nth-[even]:hover:rotate-6 transition-all',
+					'flex items-center justify-center w-8 h-8 hover:scale-125 hover:opacity-80 hover:-rotate-6 nth-[even]:hover:rotate-6 transition-all',
 					styles.social,
 				)}
 				href={social.href}
