@@ -134,7 +134,6 @@ export const PhysicsTypeGame = () => {
 			if (!canvasRef.current) return;
 			canvasRef.current.width = window.innerWidth;
 			canvasRef.current.height = window.innerHeight;
-			console.log('Resize');
 			Body.setPosition(borderRight, {
 				x: window.innerWidth + (bodySize * 5) / 2,
 				y: centerY + (bodySize * 5) / 2,

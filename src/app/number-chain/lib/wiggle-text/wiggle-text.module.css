@@ -1,0 +1,21 @@
+@keyframes wiggle {
+	0% {
+		transform: translateY(0%);
+	}
+	50% {
+		transform: translateY(0.15em);
+	}
+	100% {
+		transform: translateY(0%);
+	}
+}
+
+.wiggle {
+	display: inline-block;
+	white-space: nowrap;
+	animation: wiggle 1s ease-in-out infinite;
+
+	&:empty {
+		width: 0.5em;
+	}
+}

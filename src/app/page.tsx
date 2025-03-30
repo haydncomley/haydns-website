@@ -3,7 +3,7 @@ import { Socials } from '~/components/socials';
 import { NumberChainModule } from './number-chain/page';
 import { PhysicsTypeModule } from './physics-type/page';
 
-const modules = [PhysicsTypeModule];
+const modules = [NumberChainModule, PhysicsTypeModule];
 
 export default function Page() {
 	return (
@@ -16,7 +16,7 @@ export default function Page() {
 				<Socials />
 			</div>
 
-			<div className="grid grid-cols-1 grid-rows-18 sm:grid-cols-2 md:grid-cols-4 md:grid-rows-9 xl:grid-cols-6 xl:grid-rows-6 flex-1 p-4 pt-0 gap-2">
+			<div className="grid grid-cols-1 grid-rows-18 sm:grid-cols-2 md:grid-cols-4 md:grid-rows-9 2xl:grid-cols-6 xl:grid-rows-6 flex-1 p-4 pt-0 gap-2">
 				{modules.map((module) => (
 					<article
 						key={module.path}

@@ -35,7 +35,6 @@ module.exports = [
 		rules: {
 			'prettier/prettier': 'error',
 			// Indentation and Formatting
-			'no-mixed-spaces-and-tabs': 'error',
 			'object-curly-spacing': ['error', 'always'],
 			'array-bracket-spacing': ['error', 'never'],
 			'import/newline-after-import': ['error', { count: 1 }],
