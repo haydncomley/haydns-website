@@ -6,7 +6,9 @@ import { LEVELS } from '../consts';
 import { WiggleText } from '../wiggle-text';
 
 export const Menu = () => {
-	const [lastLevelCompleted, setLastLevelCompleted] = useState(0);
+	const [lastLevelCompleted, setLastLevelCompleted] = useState<number | null>(
+		null,
+	);
 
 	useEffect(() => {
 		setLastLevelCompleted(
@@ -21,7 +23,7 @@ export const Menu = () => {
 			</h1>
 
 			<div className="flex flex-col gap-4 items-center">
-				{lastLevelCompleted > 0 ? (
+				{lastLevelCompleted !== null ? (
 					<p className="text-sm text-foreground/50">
 						Played {lastLevelCompleted} out of {LEVELS.length} levels
 					</p>
@@ -30,10 +32,10 @@ export const Menu = () => {
 				)}
 
 				<a
-					href={`?level=${Math.min(lastLevelCompleted + 1, LEVELS.length)}`}
+					href={`?level=${Math.min((lastLevelCompleted ?? 0) + 1, LEVELS.length)}`}
 					className="relative text-xl font-semibold bg-primary text-primary-foreground uppercase tracking-wide rounded-2xl p-3 w-48 text-center shadow-md hover:scale-105 transition-all hover:shadow-lg"
 				>
-					<span>{lastLevelCompleted === 0 ? 'Play' : 'Continue'}</span>
+					<span>{!lastLevelCompleted ? 'Play' : 'Continue'}</span>
 				</a>
 
 				<a

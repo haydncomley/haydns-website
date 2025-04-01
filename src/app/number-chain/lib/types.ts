@@ -8,17 +8,19 @@ export type ILevel = {
 	target: number;
 	par: number;
 	layout: ILevelBlock[][];
+	category: string;
 };
 
 export type ILevelBlock = {
 	isDone?: boolean;
 	isBlock?: boolean;
 	value?: number;
-} & (
-	| {
-			value?: number;
-	  }
-	| {
-			value: number;
-	  }
-);
+	operation?: 'double';
+};
+
+export const OPERATION_LABELS: Record<
+	NonNullable<ILevelBlock['operation']>,
+	string
+> = {
+	double: 'x2',
+};

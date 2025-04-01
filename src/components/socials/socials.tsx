@@ -24,7 +24,7 @@ const SOCIALS = [
 ];
 
 export const Socials = () => (
-	<div className="flex items-center justify-center gap-4">
+	<div className="flex items-center justify-center gap-5">
 		{SOCIALS.map((social) => (
 			<a
 				title={social.label}

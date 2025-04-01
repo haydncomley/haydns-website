@@ -75,12 +75,23 @@ export const Level = ({ level }: LevelProps) => {
 		const currentBlocksInChain = isValidMove(pos);
 		if (!isChaining) setIsChaining(true);
 
-		const currentChainValue = currentBlocksInChain.reduce((acc, block) => {
+		let currentChainValue = currentBlocksInChain.reduce((acc, block) => {
 			const blockDetails = levelDetails.layout[block.y][block.x];
 			return acc + (blockDetails.value ?? 0);
 		}, 0);
 
 		if (currentChainValue > levelDetails.target) return;
+
+		currentBlocksInChain.forEach((block) => {
+			const blockDetails = levelDetails.layout[block.y][block.x];
+			switch (blockDetails.operation ?? 'none') {
+				case 'double':
+					currentChainValue *= 2;
+					break;
+				default:
+					break;
+			}
+		});
 
 		if (currentChainValue !== currentScore) {
 			navigator?.vibrate?.(50);
@@ -132,7 +143,7 @@ export const Level = ({ level }: LevelProps) => {
 				localStorage.setItem('lastLevelCompleted', level.toString());
 			}
 
-			navigator?.vibrate?.([500, 100, 200, 100, 200]);
+			navigator?.vibrate?.([50]);
 			const jsConfetti = new JSConfetti();
 			jsConfetti.addConfetti({});
 			const lastScore = Number(
@@ -148,7 +159,8 @@ export const Level = ({ level }: LevelProps) => {
 		setBlocksInChain([]);
 		setIsChaining(false);
 		setCurrentScore(0);
-		setTurnsTaken((prev) => prev + 1);
+		if (currentScore === levelDetails.target || blocksInChain.length > 1)
+			setTurnsTaken((prev) => prev + 1);
 	};
 
 	useEffect(() => {
@@ -168,7 +180,11 @@ export const Level = ({ level }: LevelProps) => {
 		const checkBoardWidth = () => {
 			if (!boardRef.current) return;
 			const currentWidth = boardRef.current.clientWidth;
-			const percentage = currentWidth / window.innerWidth;
+			const currentHeight = boardRef.current.clientHeight;
+			const percentage = Math.max(
+				currentWidth / window.innerWidth,
+				currentHeight / boardRef.current.parentElement!.clientHeight,
+			);
 
 			if (percentage > 1) {
 				boardRef.current.style.transform = `scale(${2 - percentage - 0.1})`;
@@ -195,22 +211,46 @@ export const Level = ({ level }: LevelProps) => {
 			<div className="absolute flex flex-col top-4 left-1/2 -translate-x-1/2 items-center gap-2 md:top-1/8">
 				<div className="flex flex-col items-center">
 					<h2 className="text-3xl font-bold">{levelDetails.name}</h2>
-					<p>Level {level}</p>
+					<p>
+						{levelDetails.category} - Level {level}
+					</p>
 				</div>
 
 				<div className="flex gap-6 text-3xl font-bold">
-					<p className="text-primary">{levelDetails.target}</p>
-					<p className="text-secondary">{currentScore}</p>
-					<p className="text-foreground">
-						{turnsTaken}
-						<small className="text-foreground/50 text-base">
-							/{levelDetails.par}
-						</small>
-					</p>
+					<div className="flex flex-col items-center">
+						<p
+							className={classNames({
+								'text-primary': currentScore !== levelDetails.target,
+								'text-secondary':
+									currentScore === levelDetails.target || currentScore === 0,
+							})}
+						>
+							{currentScore === 0 ? (
+								<>{levelDetails.target}</>
+							) : (
+								<>
+									{currentScore}
+									<small className="text-foreground/50 text-base">
+										/{levelDetails.target}
+									</small>
+								</>
+							)}
+						</p>
+						<small className="text-xs opacity-50">Target</small>
+					</div>
+					<div className="flex flex-col items-center">
+						<p className="text-foreground">
+							{turnsTaken}
+							<small className="text-foreground/50 text-base">
+								/{levelDetails.par}
+							</small>
+						</p>
+						<small className="text-xs opacity-50">Strokes</small>
+					</div>
 				</div>
 			</div>
 
-			<div className="flex flex-col relative items-center justify-center">
+			<div className="flex flex-col relative items-center justify-center max-h-[60vh]">
 				<div
 					ref={boardRef}
 					className={classNames(
@@ -257,14 +297,23 @@ export const Level = ({ level }: LevelProps) => {
 				{isLevelCompleted ? (
 					<div className="absolute flex flex-col gap-3 rounded-xl p-2 whitespace-nowrap text-center items-center">
 						<p className="text-3xl font-bold">
-							<WiggleText content="Level Completed" />
+							{!nextLevelDetails ? (
+								<WiggleText content="All Levels Completed" />
+							) : (
+								<WiggleText content="Level Completed" />
+							)}
 						</p>
-						<div className="flex gap-4 p-3 px-4 backdrop-blur-md rounded-xl border-2 border-foreground/15 shadow-md items-center bg-background/25">
+						<p className="text-2xl">
+							{nextLevelDetails?.category !== levelDetails.category ? (
+								<WiggleText content="Category Cleared" />
+							) : null}
+						</p>
+						<div className="mt-4 flex gap-4 p-3 px-4 backdrop-blur-md rounded-xl border-2 border-foreground/15 shadow-md items-center bg-background/25">
 							<p className="flex flex-col">
 								<small>Total Turns</small>
 								<b className="text-xl">{turnsTaken}</b>
 							</p>
-							{turnsTaken < levelDetails.par ? (
+							{turnsTaken > levelDetails.par ? (
 								<>
 									•
 									<p className="flex flex-col">

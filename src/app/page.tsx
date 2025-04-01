@@ -7,9 +7,9 @@ const modules = [NumberChainModule, PhysicsTypeModule];
 
 export default function Page() {
 	return (
-		<main className="h-full w-full overflow-hidden flex flex-col">
-			<div className="flex flex-col p-4 items-start gap-2">
-				<div className="flex flex-col">
+		<main className="h-full w-full overflow-hidden flex flex-col gap-1">
+			<div className="flex flex-col p-4 items-start gap-3">
+				<div className="flex flex-col gap-1">
 					<h1 className="text-2xl font-bold md:text-4xl">haydns.website</h1>
 					<p className="text-sm md:text-lg">
 						just a collection of stuff and things
