@@ -1,6 +1,7 @@
 'use client';
 
 import classNames from 'classnames';
+import { ArrowLeft } from 'lucide-react';
 import {
 	Bodies,
 	Body,
@@ -11,11 +12,13 @@ import {
 	Render,
 	Runner,
 } from 'matter-js';
+import Link from 'next/link';
 import { useEffect, useRef } from 'react';
 import seedColour from 'seed-color';
 
 import styles from './game.module.css';
 import * as Keys from './lib/consts';
+import { VirtualKeyboard } from './lib/virtual-keyboard';
 
 export const SPECIAL_WORDS = [
 	{
@@ -62,6 +65,7 @@ export const PhysicsTypeGame = () => {
 
 		let centerX = window.innerWidth / 2;
 		let centerY = window.innerHeight / 2;
+		const height = canvasRef.current.offsetHeight;
 		const bodySize = 20;
 
 		let currentX = centerX * 0.2;
@@ -133,7 +137,7 @@ export const PhysicsTypeGame = () => {
 		const resizeCanvas = () => {
 			if (!canvasRef.current) return;
 			canvasRef.current.width = window.innerWidth;
-			canvasRef.current.height = window.innerHeight;
+			canvasRef.current.height = height;
 			Body.setPosition(borderRight, {
 				x: window.innerWidth + (bodySize * 5) / 2,
 				y: centerY + (bodySize * 5) / 2,
@@ -148,10 +152,10 @@ export const PhysicsTypeGame = () => {
 			});
 			Body.setPosition(borderBottom, {
 				x: centerX,
-				y: window.innerHeight + (bodySize * 5) / 2,
+				y: height + (bodySize * 5) / 2,
 			});
 			centerX = window.innerWidth / 2;
-			centerY = window.innerHeight / 2;
+			centerY = height / 2;
 		};
 
 		const mouseConstraint = MouseConstraint.create(engine, {
@@ -181,15 +185,14 @@ export const PhysicsTypeGame = () => {
 		window.addEventListener('resize', resizeCanvas, { signal });
 		resizeCanvas();
 
-		window.addEventListener('keydown', (e) => {
-			const key = e.key.toUpperCase();
-			const createBodies = Keys[key as keyof typeof Keys];
+		const handleKeyDown = (key: string, andShift?: boolean) => {
+			const createBodies = Keys[key.toUpperCase() as keyof typeof Keys];
 
 			if (createBodies) {
 				const colour = seedColour(Date.now().toString()).toHex();
 				const bodies = createBodies(currentX, centerY * 0.5, bodySize);
 				wordGroupsRef.current.push(bodies);
-				lastLettersRef.current += key;
+				lastLettersRef.current += key.toLowerCase();
 
 				bodies.forEach((a, i) => {
 					a.restitution = 1;
@@ -234,18 +237,18 @@ export const PhysicsTypeGame = () => {
 				Composite.add(engine.world, bodies);
 			}
 
-			if (e.key === 'Backspace') {
-				const bodies = e.shiftKey
+			if (key === 'Backspace') {
+				const bodies = andShift
 					? wordGroupsRef.current.flat()
 					: wordGroupsRef.current.pop();
 				if (bodies) {
 					Composite.remove(engine.world, bodies);
 				}
-				if (e.shiftKey) render.options.background = 'transparent';
+				if (andShift) render.options.background = 'transparent';
 			}
 
 			const lastSpecialWorld = SPECIAL_WORDS.find((w) =>
-				lastLettersRef.current.endsWith(w.world.toUpperCase()),
+				lastLettersRef.current.toLowerCase().endsWith(w.world.toLowerCase()),
 			);
 
 			if (lastSpecialWorld) {
@@ -264,7 +267,16 @@ export const PhysicsTypeGame = () => {
 				});
 				render.options.background = lastSpecialWorld.background;
 			}
-		});
+		};
+
+		window.addEventListener(
+			'virtual-keydown',
+			(e: Event) =>
+				handleKeyDown((e as KeyboardEvent).key, (e as KeyboardEvent).shiftKey),
+			{
+				signal,
+			},
+		);
 
 		return () => {
 			abortController.abort();
@@ -272,15 +284,29 @@ export const PhysicsTypeGame = () => {
 	}, []);
 
 	return (
-		<div className="w-full h-full flex flex-col items-center justify-center">
-			<p className={classNames('text-sm tracking-widest', styles.floatAround)}>
+		<div className="w-full h-full flex flex-col items-center justify-center select-none overflow-hidden">
+			<Link
+				href="/"
+				className="absolute top-4 left-4 rounded-full bg-foreground/5 p-3 hover:bg-foreground/10 transition-all z-10"
+			>
+				<ArrowLeft className="w-6 h-6" />
+			</Link>
+
+			<p
+				className={classNames(
+					'absolute text-sm tracking-widest',
+					styles.floatAround,
+				)}
+			>
 				just type...
 			</p>
 
 			<canvas
+				className="flex-1"
 				ref={canvasRef}
-				className="absolute top-0 left-0 w-full h-full"
 			/>
+
+			<VirtualKeyboard />
 		</div>
 	);
 };

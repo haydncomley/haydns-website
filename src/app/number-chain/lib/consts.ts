@@ -40,8 +40,8 @@ export const LEVELS: ILevel[] = [
 	{
 		name: 'Mind The Gap',
 		category: 'Introduction',
-		target: 2,
-		par: 2,
+		target: 4,
+		par: 4,
 		layout: [
 			[{ value: 1 }, { value: 1 }],
 			[{ isBlock: true }, { isBlock: true }],
@@ -108,4 +108,20 @@ export const LEVELS: ILevel[] = [
 			[{ value: 4 }, { value: 1 }, { value: 1 }],
 		],
 	},
+	// {
+	// 	name: 'Test',
+	// 	category: 'Easy',
+	// 	target: 10,
+	// 	par: 2,
+	// 	layout: [
+	// 		[{ value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }],
+	// 		[
+	// 			{ operation: 'double' },
+	// 			{ isBlock: true },
+	// 			{ isBlock: true },
+	// 			{ operation: 'double' },
+	// 		],
+	// 		[{ value: 3 }, { value: 1 }, { value: 1 }, { value: 1 }],
+	// 	],
+	// },
 ];

@@ -76,14 +76,14 @@ export const Level = ({ level }: LevelProps) => {
 		if (!isChaining) setIsChaining(true);
 
 		let currentChainValue = currentBlocksInChain.reduce((acc, block) => {
-			const blockDetails = levelDetails.layout[block.y][block.x];
+			const blockDetails = levelState[block.y][block.x];
 			return acc + (blockDetails.value ?? 0);
 		}, 0);
 
 		if (currentChainValue > levelDetails.target) return;
 
 		currentBlocksInChain.forEach((block) => {
-			const blockDetails = levelDetails.layout[block.y][block.x];
+			const blockDetails = levelState[block.y][block.x];
 			switch (blockDetails.operation ?? 'none') {
 				case 'double':
 					currentChainValue *= 2;
@@ -114,18 +114,19 @@ export const Level = ({ level }: LevelProps) => {
 
 		let levelStateNow = [...levelState];
 
-		if (currentScore === levelDetails.target) {
-			// Update the blocks that are in the chain to isDone: true
-			levelStateNow = levelStateNow.map((row, y) =>
-				row.map((block, x) =>
-					blocksInChain.some(
-						(chainBlock) => chainBlock.x === x && chainBlock.y === y,
-					)
-						? { ...block, isDone: true }
-						: block,
-				),
-			);
-		}
+		levelStateNow = levelStateNow.map((row, y) =>
+			row.map((block, x) =>
+				blocksInChain.some(
+					(chainBlock) => chainBlock.x === x && chainBlock.y === y,
+				)
+					? {
+							...block,
+							isDone: currentScore === levelDetails.target,
+							value: block.value !== undefined ? currentScore : undefined,
+						}
+					: block,
+			),
+		);
 
 		const isLevelCompletedNow = levelStateNow.every((row) =>
 			row.every((block) => block.isDone || block.isBlock),
@@ -208,9 +209,11 @@ export const Level = ({ level }: LevelProps) => {
 
 	return (
 		<div className="flex flex-col gap-2">
-			<div className="absolute flex flex-col top-4 left-1/2 -translate-x-1/2 items-center gap-2 md:top-1/8">
-				<div className="flex flex-col items-center">
-					<h2 className="text-3xl font-bold">{levelDetails.name}</h2>
+			<div className="absolute flex flex-col top-4 left-1/2 -translate-x-1/2 items-center gap-2 md:top-[3rem]">
+				<div className="flex flex-col items-center text-center">
+					<h2 className="text-3xl font-bold whitespace-nowrap">
+						{levelDetails.name}
+					</h2>
 					<p>
 						{levelDetails.category} - Level {level}
 					</p>
@@ -337,7 +340,7 @@ export const Level = ({ level }: LevelProps) => {
 				) : null}
 			</div>
 
-			<div className="absolute flex bottom-0 left-0 right-0 items-center justify-between p-4 z-10 md:bottom-1/8 md:left-1/2 md:right-auto md:translate-x-[-50%] md:gap-4">
+			<div className="absolute flex bottom-0 left-0 right-0 items-center justify-between p-4 z-10 md:bottom-[4rem] md:left-1/2 md:right-auto md:translate-x-[-50%] md:gap-4">
 				<Link
 					href={'/number-chain'}
 					className="relative text-lg font-semibold bg-foreground text-background uppercase rounded-2xl p-3 px-6 shadow-md hover:scale-105 transition-all hover:shadow-lg"
