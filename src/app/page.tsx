@@ -1,11 +1,19 @@
 import { Socials } from '~/components/socials';
 
-import { NumberChainModule } from './number-chain/page';
-import { PhysicsTypeModule } from './physics-type/page';
-// import { VinylPlayerModule } from './vinyl-player/page';
-
-const modules = [NumberChainModule, PhysicsTypeModule];
-
+const modules = [
+	{
+		name: 'Vinyl Player',
+		path: '/vinyl-player',
+	},
+	{
+		name: 'Number Chain',
+		path: '/number-chain',
+	},
+	{
+		name: 'Physics Type',
+		path: '/physics-type',
+	},
+];
 export default function Page() {
 	return (
 		<main className="h-full w-full overflow-hidden flex flex-col gap-1">
@@ -19,7 +27,7 @@ export default function Page() {
 				<Socials />
 			</div>
 
-			<div className="flex-1 overflow-auto">
+			<div className="flex-1 overflow-auto p-4 -m-4">
 				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 md 2xl:grid-cols-6 p-4 pt-0 gap-4">
 					{modules.map((module) => (
 						<article

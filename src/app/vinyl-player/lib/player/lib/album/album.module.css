@@ -26,10 +26,10 @@
 
 @keyframes fanOut {
 	0% {
-		transform: perspective(500px) rotateY(0deg);
+		transform: perspective(50rem) rotateY(0deg);
 	}
 	100% {
-		transform: perspective(500px) translateX(-5%) rotateY(-25deg);
+		transform: perspective(50rem) translateX(-5%) rotateY(-25deg);
 	}
 }
 
@@ -40,26 +40,26 @@
 
 @keyframes rollOut {
 	0% {
-		transform: perspective(500px) translateX(0) scale(0.92) rotate(0deg);
+		transform: perspective(50rem) translateX(0) scale(0.92) rotate(0deg);
 	}
 	100% {
-		transform: perspective(500px) translateX(50%) scale(1) rotate(90deg);
+		transform: perspective(50rem) translateX(50%) scale(1) rotate(90deg);
 	}
 }
 
 @keyframes rollIn {
 	0% {
-		transform: perspective(500px) translateX(50%) scale(1) rotate(90deg);
+		transform: perspective(50rem) translateX(50%) scale(1) rotate(90deg);
 	}
 	100% {
-		transform: perspective(500px) translateX(0) scale(0.92) rotate(0deg);
+		transform: perspective(50rem) translateX(0) scale(0.92) rotate(0deg);
 	}
 }
 
 .record {
 	background: linear-gradient(to bottom, #2b2b2b, #474747, #2b2b2b);
 	transform-origin: center;
-	animation: rollOut 0.5s 0.1s ease forwards;
+	animation: rollOut 0.5s 0.2s ease both;
 }
 
 .rollIn {

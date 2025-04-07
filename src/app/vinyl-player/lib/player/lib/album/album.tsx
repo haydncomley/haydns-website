@@ -1,15 +1,23 @@
 /* eslint-disable @next/next/no-img-element */
 import type { SimplifiedPlaylist } from '@spotify/web-api-ts-sdk';
 import classNames from 'classnames';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Loader2 } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
 import { getPrimaryColour } from '../get-primary-colour';
 import styles from './album.module.css';
+import { useAlbum } from '../use-album';
 
 export type AlbumProps = {
 	playlist: SimplifiedPlaylist;
+};
+
+const formatDuration = (ms: number): string => {
+	const totalSeconds = Math.floor(ms / 1000);
+	const minutes = Math.floor(totalSeconds / 60);
+	const seconds = totalSeconds % 60;
+	return `${minutes}m ${seconds}s`;
 };
 
 export const Album = ({ playlist }: AlbumProps) => {
@@ -20,12 +28,13 @@ export const Album = ({ playlist }: AlbumProps) => {
 	const [isClosing, setIsClosing] = useState(false);
 	const [isDragging, setIsDragging] = useState(false);
 
+	const { album, isAlbumLoading } = useAlbum({
+		playlistId: isFocused ? playlist.id : undefined,
+	});
+
 	useEffect(() => {
 		if (!imgRef.current) return;
-
 		const img = imgRef.current;
-
-		// Convert RGB to HSL
 		getPrimaryColour(img).then(setColour);
 	}, [imgRef.current]);
 
@@ -53,7 +62,7 @@ export const Album = ({ playlist }: AlbumProps) => {
 			let currentY =
 				'clientY' in event ? event.clientY : event.touches[0].clientY;
 
-			recordRef.current.style.transform = `translate(${currentX - startX}px, ${currentY - startY}px) scale(0.92)`;
+			recordRef.current.style.transform = `translate(${currentX - startX}px, ${currentY - startY}px)`;
 		};
 
 		const onDragStart = (event: MouseEvent | TouchEvent) => {
@@ -153,7 +162,7 @@ export const Album = ({ playlist }: AlbumProps) => {
 								<ArrowLeft className="w-6 h-6 text-white"></ArrowLeft>
 							</button>
 
-							<article className="relative flex flex-col gap-4 p-3 md:max-w-2xl md:mx-auto">
+							<article className="relative flex flex-col gap-4 p-3 md:w-md md:mx-auto overflow-hidden flex-1">
 								<div className="relative w-2/3 aspect-square rounded-2xl p-2">
 									<img
 										className={classNames(
@@ -205,16 +214,33 @@ export const Album = ({ playlist }: AlbumProps) => {
 									) : null}
 								</h2>
 
-								<div className="flex flex-col bg-white/20 backdrop-blur-md p-2 px-4 rounded-xl border border-white/10 gap-1 text-white">
-									<div className="flex items-center">
-										<p className="grow shrink-0">Song 1</p>
-										<p className="grow-0 shrink-0">1m 30s</p>
+								{!isAlbumLoading ? (
+									<div
+										className={classNames(
+											'flex flex-col bg-white/20 backdrop-blur-lg p-3 px-4 rounded-xl border border-white/10 gap-2 text-white overflow-auto',
+											styles.fadeIn,
+										)}
+									>
+										{album?.tracks.items.map(({ track }) => (
+											<div
+												className="flex items-center gap-2"
+												key={track.id}
+											>
+												<div className="grow shrink-1 flex flex-col truncate">
+													<p className="text-sm truncate">{track.name}</p>
+													<small className="flex opacity-75 text-xs -mt-0.5">
+														{track.artists.slice(0, 1).map((artist) => (
+															<span key={artist.id}>{artist.name}</span>
+														))}
+													</small>
+												</div>
+												<p className="grow-0 shrink-0">
+													{formatDuration(track.duration_ms)}
+												</p>
+											</div>
+										))}
 									</div>
-									<div className="flex items-center">
-										<p className="grow shrink-0">Song 2</p>
-										<p className="grow-0 shrink-0">1m 30s</p>
-									</div>
-								</div>
+								) : null}
 							</article>
 						</div>,
 						document.body,
