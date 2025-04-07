@@ -9,6 +9,7 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@spotify/web-api-ts-sdk": "^1.2.0",
     "@tanstack/react-query": "^5.68.0",
     "classnames": "^2.5.1",
     "eslint-config-prettier": "^10.1.1",
