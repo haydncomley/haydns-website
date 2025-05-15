@@ -128,7 +128,6 @@ export const Album = ({ playlist }: AlbumProps) => {
 				<img
 					ref={imgRef}
 					className="w-full h-full object-cover"
-					crossOrigin="anonymous"
 					src={playlist.images?.[0]?.url ?? 'https://placehold.co/300x300'}
 					alt={playlist.name}
 				/>
@@ -169,7 +168,6 @@ export const Album = ({ playlist }: AlbumProps) => {
 											'relative w-full h-full object-cover z-10 shadow-2xl rounded-lg md:w-sm',
 											styles.recordCover,
 										)}
-										crossOrigin="anonymous"
 										src={
 											playlist.images?.[0]?.url ??
 											'https://placehold.co/300x300'
@@ -192,7 +190,6 @@ export const Album = ({ playlist }: AlbumProps) => {
 										>
 											<img
 												className="object-cover rounded-full w-1/2 h-1/2 pointer-events-none"
-												crossOrigin="anonymous"
 												src={
 													playlist.images?.[0]?.url ??
 													'https://placehold.co/150x150'

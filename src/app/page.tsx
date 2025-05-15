@@ -46,6 +46,7 @@ export default function Page() {
 									autoPlay
 									muted
 									loop
+									playsInline
 								/>
 
 								<span className="absolute bottom-0 left-0 p-2 pb-1 mix-blend-exclusion text-white">
