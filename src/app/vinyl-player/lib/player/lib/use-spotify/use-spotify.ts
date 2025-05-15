@@ -12,8 +12,6 @@ export const useSpotify = () => {
 				url.searchParams.delete(key);
 			});
 
-			console.log(url.toString());
-
 			return SpotifyApi.withUserAuthorization(
 				process.env.NEXT_PUBLIC_SPOTIFY_CLIENT_ID!,
 				url.toString(),
@@ -22,5 +20,9 @@ export const useSpotify = () => {
 		},
 	});
 
-	return { spotify: data };
+	const logout = () => {
+		data?.logOut();
+	};
+
+	return { spotify: data, logout };
 };
