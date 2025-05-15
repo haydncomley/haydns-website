@@ -2,6 +2,7 @@
 import type { SimplifiedPlaylist } from '@spotify/web-api-ts-sdk';
 import classNames from 'classnames';
 import { ArrowLeft, Loader2 } from 'lucide-react';
+import type { RefObject } from 'react';
 import { useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 
@@ -11,6 +12,8 @@ import { useAlbum } from '../use-album';
 
 export type AlbumProps = {
 	playlist: SimplifiedPlaylist;
+	parentRef: RefObject<HTMLDivElement | null>;
+	onDragChange: (isDragging: boolean) => void;
 };
 
 const formatDuration = (ms: number): string => {
@@ -20,8 +23,9 @@ const formatDuration = (ms: number): string => {
 	return `${minutes}m ${seconds}s`;
 };
 
-export const Album = ({ playlist }: AlbumProps) => {
+export const Album = ({ playlist, parentRef, onDragChange }: AlbumProps) => {
 	const imgRef = useRef<HTMLImageElement>(null);
+	const buttonRef = useRef<HTMLButtonElement>(null);
 	const recordRef = useRef<HTMLDivElement>(null);
 	const [colour, setColour] = useState<string>('#000000');
 	const [isFocused, setIsFocused] = useState(false);
@@ -68,6 +72,7 @@ export const Album = ({ playlist }: AlbumProps) => {
 		const onDragStart = (event: MouseEvent | TouchEvent) => {
 			if (isDragging || !recordRef.current) return;
 			setIsDragging(true);
+			onDragChange(true);
 			isDragging = true;
 			startX = 'clientX' in event ? event.clientX : event.touches[0].clientX;
 			startY = 'clientY' in event ? event.clientY : event.touches[0].clientY;
@@ -77,6 +82,7 @@ export const Album = ({ playlist }: AlbumProps) => {
 		const onDragEnd = () => {
 			if (!recordRef.current) return;
 			setIsDragging(false);
+			onDragChange(false);
 			isDragging = false;
 			recordRef.current.style.transform = '';
 			recordRef.current.style.transition = '0.2s ease';
@@ -119,11 +125,30 @@ export const Album = ({ playlist }: AlbumProps) => {
 		return () => abortController.abort();
 	}, [recordRef.current, isFocused]);
 
+	useEffect(() => {
+		if (!buttonRef.current) return;
+
+		const intersectionObserver = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					if (!buttonRef.current) return;
+					buttonRef.current.style.opacity = entry.intersectionRatio.toString();
+				});
+			},
+			{ root: null, threshold: [0, 0.2, 0.4, 0.6, 0.8, 1] },
+		);
+
+		intersectionObserver.observe(buttonRef.current);
+
+		return () => intersectionObserver.disconnect();
+	}, [buttonRef]);
+
 	return (
 		<>
 			<button
+				ref={buttonRef}
 				onClick={() => setIsFocused(!isFocused)}
-				className="relative rounded-lg overflow-hidden shadow-sm hover:scale-110 hover:shadow-lg transition-all duration-150 cursor-pointer"
+				className="relative cursor-pointer overflow-hidden rounded-lg shadow-sm transition-all duration-150 hover:scale-110 hover:shadow-lg"
 			>
 				<img
 					ref={imgRef}
@@ -133,39 +158,39 @@ export const Album = ({ playlist }: AlbumProps) => {
 				/>
 			</button>
 
-			{isFocused
+			{isFocused && parentRef.current
 				? createPortal(
 						<div
 							className={classNames(
-								'fixed top-0 left-0 right-0 bottom-0 z-10 bg-black/50 backdrop-blur-sm flex flex-col p-2 select-none',
+								'fixed top-0 right-0 bottom-0 left-0 z-10 flex flex-col overflow-hidden bg-black/50 backdrop-blur-sm select-none',
 								isClosing ? styles.fadeOut : styles.fadeIn,
 							)}
 						>
 							<div
-								className="absolute top-0 left-0 right-0 bottom-0 opacity-25"
+								className="absolute top-0 right-0 bottom-0 left-0 opacity-25"
 								style={{
-									background: `linear-gradient(to bottom right, ${colour}, ${colour}00)`,
+									background: `linear-gradient(to bottom, ${colour}, ${colour}00)`,
 								}}
 							></div>
 
 							<button
 								onClick={close}
 								className={classNames(
-									'relative rounded-full bg-white/20 p-2 mr-auto m-2 backdrop-blur-md border border-white/10',
+									'absolute top-0 left-0 z-10 m-4 mr-auto cursor-pointer rounded-full border border-white/10 bg-white/20 p-2 backdrop-blur-md transition-all duration-100 hover:bg-white/30',
 									styles.fadeIn,
 								)}
 								style={{
 									animationDelay: '0.3s',
 								}}
 							>
-								<ArrowLeft className="w-6 h-6 text-white"></ArrowLeft>
+								<ArrowLeft className="h-6 w-6 text-white"></ArrowLeft>
 							</button>
 
-							<article className="relative flex flex-col gap-4 p-3 md:w-md md:mx-auto overflow-hidden flex-1">
-								<div className="relative w-2/3 aspect-square rounded-2xl p-2">
+							<article className="relative flex flex-1 flex-col gap-4 overflow-hidden p-4 pt-16 md:mx-auto md:w-md">
+								<div className="relative z-10 aspect-square w-2/3 rounded-2xl p-2">
 									<img
 										className={classNames(
-											'relative w-full h-full object-cover z-10 shadow-2xl rounded-lg md:w-sm',
+											'relative z-10 h-full w-full rounded-lg object-cover shadow-2xl md:w-sm',
 											styles.recordCover,
 										)}
 										src={
@@ -176,11 +201,11 @@ export const Album = ({ playlist }: AlbumProps) => {
 									/>
 									<div
 										ref={recordRef}
-										className="absolute w-full aspect-square top-0 left-0"
+										className="absolute top-0 left-0 aspect-square w-full"
 									>
 										<div
 											className={classNames(
-												'w-full aspect-square rounded-full border-2 border-white/5 flex items-center justify-center shadow-md',
+												'flex aspect-square w-full items-center justify-center rounded-full border-2 border-white/5 shadow-md',
 												styles.record,
 												{
 													'cursor-grabbing': isDragging,
@@ -196,12 +221,19 @@ export const Album = ({ playlist }: AlbumProps) => {
 												}
 												alt={playlist.name}
 											/>
-											<span className="w-2 h-2 rounded-full absolute bg-background border border-foreground/10"></span>
+											<span className="bg-background border-foreground/10 absolute h-2 w-2 rounded-full border"></span>
 										</div>
 									</div>
 								</div>
 
-								<h2 className="text-2xl font-bold text-center mt-4 mb-2 text-white">
+								<h2
+									className={classNames(
+										'mt-4 mb-2 text-center text-2xl font-bold text-white',
+										{
+											'opacity-0': isDragging,
+										},
+									)}
+								>
 									{playlist.name || 'Untitled'}
 
 									{playlist.description ? (
@@ -214,8 +246,11 @@ export const Album = ({ playlist }: AlbumProps) => {
 								{!isAlbumLoading ? (
 									<div
 										className={classNames(
-											'flex flex-col bg-white/20 backdrop-blur-lg p-3 px-4 rounded-xl border border-white/10 gap-2 text-white overflow-auto',
+											'flex max-h-full flex-col gap-2 overflow-auto rounded-xl border border-white/10 bg-white/20 p-3 px-4 text-white backdrop-blur-lg transition-all',
 											styles.fadeIn,
+											{
+												'opacity-0': isDragging,
+											},
 										)}
 									>
 										{album?.tracks.items.map(({ track }) => (
@@ -223,15 +258,15 @@ export const Album = ({ playlist }: AlbumProps) => {
 												className="flex items-center gap-2"
 												key={track.id}
 											>
-												<div className="grow shrink-1 flex flex-col truncate">
-													<p className="text-sm truncate">{track.name}</p>
-													<small className="flex opacity-75 text-xs -mt-0.5">
+												<div className="flex shrink-1 grow flex-col truncate">
+													<p className="truncate text-sm">{track.name}</p>
+													<small className="-mt-0.5 flex text-xs opacity-75">
 														{track.artists.slice(0, 1).map((artist) => (
 															<span key={artist.id}>{artist.name}</span>
 														))}
 													</small>
 												</div>
-												<p className="grow-0 shrink-0">
+												<p className="shrink-0 grow-0">
 													{formatDuration(track.duration_ms)}
 												</p>
 											</div>
@@ -240,7 +275,7 @@ export const Album = ({ playlist }: AlbumProps) => {
 								) : null}
 							</article>
 						</div>,
-						document.body,
+						parentRef.current,
 					)
 				: null}
 		</>

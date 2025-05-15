@@ -2,7 +2,7 @@ import { Socials } from '~/components/socials';
 
 const modules = [
 	{
-		name: 'Vinyl Player',
+		name: 'Vinyl Viewer',
 		path: '/vinyl-player',
 	},
 	{
@@ -16,8 +16,8 @@ const modules = [
 ];
 export default function Page() {
 	return (
-		<main className="h-full w-full overflow-hidden flex flex-col gap-1">
-			<div className="flex flex-col p-4 items-start gap-3">
+		<main className="flex h-full w-full flex-col gap-1 overflow-hidden">
+			<div className="flex flex-col items-start gap-3 p-4">
 				<div className="flex flex-col gap-1">
 					<h1 className="text-2xl font-bold md:text-4xl">haydns.website</h1>
 					<p className="text-sm md:text-lg">
@@ -27,29 +27,29 @@ export default function Page() {
 				<Socials />
 			</div>
 
-			<div className="flex-1 overflow-auto p-4 -m-4">
-				<div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 md 2xl:grid-cols-6 p-4 pt-0 gap-4">
+			<div className="-m-4 flex-1 overflow-auto p-4">
+				<div className="md grid grid-cols-1 gap-4 p-4 pt-0 sm:grid-cols-2 md:grid-cols-4 2xl:grid-cols-6">
 					{modules.map((module) => (
 						<article
 							key={module.path}
-							className="w-full aspect-video rounded-xl overflow-hidden shadow-md relative transition-all hover:scale-105 hover:shadow-xl"
+							className="relative aspect-video w-full overflow-hidden rounded-xl shadow-md transition-all hover:scale-105 hover:shadow-xl"
 							aria-label={`${module.name} Project`}
 							title={module.name}
 						>
 							<a
 								href={module.path}
-								className="w-full h-full flex items-center justify-center font-black uppercase relative"
+								className="relative flex h-full w-full items-center justify-center font-black uppercase"
 							>
 								<video
 									src={`/modules/${module.path.replaceAll('/', '')}.mp4`}
-									className="w-full h-full object-cover"
+									className="h-full w-full object-cover"
 									autoPlay
 									muted
 									loop
 									playsInline
 								/>
 
-								<span className="absolute bottom-0 left-0 p-2 pb-1 mix-blend-exclusion text-white">
+								<span className="absolute bottom-0 left-0 p-2 pb-1 text-white mix-blend-exclusion">
 									{module.name}
 								</span>
 							</a>
