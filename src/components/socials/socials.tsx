@@ -29,7 +29,7 @@ export const Socials = () => (
 			<a
 				title={social.label}
 				className={classNames(
-					'flex items-center justify-center w-8 h-8 hover:scale-125 hover:opacity-80 hover:-rotate-6 nth-[even]:hover:rotate-6 transition-all',
+					'flex h-8 w-8 items-center justify-center transition-all hover:scale-125 hover:-rotate-6 hover:opacity-80 nth-[even]:hover:rotate-6',
 					styles.social,
 				)}
 				href={social.href}
