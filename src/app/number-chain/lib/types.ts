@@ -16,6 +16,7 @@ export type ILevelBlock = {
 	isBlock?: boolean;
 	value?: number;
 	operation?: 'double';
+	connectedDir?: Vec2;
 };
 
 export const OPERATION_LABELS: Record<

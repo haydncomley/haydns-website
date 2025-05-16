@@ -3,32 +3,35 @@ import type { ILevel } from './types';
 export const LEVELS: ILevel[] = [
 	{
 		name: 'Intro',
-		category: 'Introduction',
+		category: 'Intro',
 		target: 2,
 		par: 1,
 		layout: [[{ value: 1 }, { value: 1 }]],
 	},
 	{
 		name: 'Level Two',
-		category: 'Introduction',
+		category: 'Intro',
 		target: 4,
 		par: 2,
-		layout: [[{ value: 2 }, { value: 2 }, { value: 2 }, { value: 2 }]],
-	},
-	{
-		name: 'Threes',
-		category: 'Introduction',
-		target: 6,
-		par: 2,
 		layout: [
-			[{ value: 2 }, { value: 2 }],
 			[{ value: 2 }, { value: 2 }],
 			[{ value: 2 }, { value: 2 }],
 		],
 	},
 	{
+		name: 'Threes',
+		category: 'Intro',
+		target: 6,
+		par: 1,
+		layout: [
+			[{ value: 1 }, { value: 1 }],
+			[{ value: 1 }, { value: 1 }],
+			[{ value: 1 }, { value: 1 }],
+		],
+	},
+	{
 		name: 'Par Four',
-		category: 'Introduction',
+		category: 'Intro',
 		target: 4,
 		par: 4,
 		layout: [
@@ -38,25 +41,51 @@ export const LEVELS: ILevel[] = [
 		],
 	},
 	{
-		name: 'Mind The Gap',
-		category: 'Introduction',
-		target: 4,
-		par: 4,
+		name: 'Doubling Up',
+		category: 'Intro',
+		target: 10,
+		par: 3,
 		layout: [
-			[{ value: 1 }, { value: 1 }],
+			[{ value: 2 }, { value: 5 }],
+			[{ value: 1 }, { value: 2 }],
+		],
+	},
+	{
+		name: 'Mind The Gap',
+		category: 'Intro',
+		target: 4,
+		par: 3,
+		layout: [
+			[{ value: 2 }, { value: 2 }],
 			[{ isBlock: true }, { isBlock: true }],
 			[{ value: 1 }, { value: 1 }],
 		],
 	},
 	{
-		name: 'Roundabout',
-		category: 'Introduction',
+		name: 'Around the bend',
+		category: 'Intro',
 		target: 8,
 		par: 1,
 		layout: [
 			[{ value: 1 }, { value: 1 }, { value: 1 }],
 			[{ value: 1 }, { isBlock: true }, { value: 1 }],
 			[{ value: 1 }, { value: 1 }, { value: 1 }],
+		],
+	},
+	{
+		name: 'Mmm',
+		category: 'Intro',
+		target: 7,
+		par: 3,
+		layout: [
+			[{ value: 1 }, { value: 2 }, { value: 1 }, { value: 2 }, { value: 1 }],
+			[
+				{ value: 1 },
+				{ isBlock: true },
+				{ value: 2 },
+				{ isBlock: true },
+				{ value: 1 },
+			],
 		],
 	},
 	{
@@ -108,20 +137,27 @@ export const LEVELS: ILevel[] = [
 			[{ value: 4 }, { value: 1 }, { value: 1 }],
 		],
 	},
-	// {
-	// 	name: 'Test',
-	// 	category: 'Easy',
-	// 	target: 10,
-	// 	par: 2,
-	// 	layout: [
-	// 		[{ value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }],
-	// 		[
-	// 			{ operation: 'double' },
-	// 			{ isBlock: true },
-	// 			{ isBlock: true },
-	// 			{ operation: 'double' },
-	// 		],
-	// 		[{ value: 3 }, { value: 1 }, { value: 1 }, { value: 1 }],
-	// 	],
-	// },
+	{
+		name: 'Cut Corners',
+		category: 'Easy',
+		target: 11,
+		par: 3,
+		layout: [
+			[{ isBlock: true }, { value: 1 }, { value: 2 }, { value: 3 }],
+			[{ value: 1 }, { value: 1 }, { value: 1 }, { value: 1 }],
+			[{ value: 1 }, { value: 2 }, { value: 3 }, { isBlock: true }],
+		],
+	},
+	{
+		name: 'The H',
+		category: 'Easy',
+		target: 8,
+		par: 6,
+		layout: [
+			[{ value: 2 }, { isBlock: true }, { value: 1 }],
+			[{ value: 1 }, { isBlock: true }, { value: 1 }],
+			[{ value: 1 }, { value: 5 }, { value: 1 }],
+			[{ value: 2 }, { isBlock: true }, { value: 2 }],
+		],
+	},
 ];

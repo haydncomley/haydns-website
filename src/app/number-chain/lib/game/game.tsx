@@ -12,7 +12,7 @@ export const NumberChainGame = () => {
 	const viewingAllLevels = searchParams.get('allLevels');
 
 	return (
-		<div className="w-full h-full flex flex-col items-center justify-center overscroll-none select-none">
+		<div className="flex h-full w-full flex-col items-center justify-center overscroll-none select-none">
 			{!currentLevel && !viewingAllLevels ? <Menu /> : null}
 			{currentLevel ? (
 				<Level

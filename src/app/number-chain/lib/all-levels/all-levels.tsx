@@ -26,14 +26,14 @@ export const AllLevels = () => {
 	}, []);
 
 	return (
-		<div className="w-full max-h-full overflow-auto pb-20 lg:w-auto lg:mx-auto">
+		<div className="max-h-full w-full overflow-auto pb-20 lg:mx-auto lg:w-auto">
 			{Object.entries(levelsGrouped).map(([category, levels], groupIndex) => (
 				<div
 					key={category}
-					className="flex flex-col p-5 gap-2"
+					className="flex flex-col gap-2 p-5"
 				>
 					<h1 className="text-lg font-bold">{category}</h1>
-					<div className="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-7">
+					<div className="grid grid-cols-2 gap-4 md:grid-cols-4 xl:grid-cols-8">
 						{levels.map((level, index) => {
 							// Add up all the levels in the group before this one
 							const levelIndex =
@@ -51,9 +51,9 @@ export const AllLevels = () => {
 									key={index}
 									href={`?level=${levelIndex + 1}`}
 									className={classNames(
-										'flex flex-col p-4 px-6 rounded-xl hover:shadow-md hover:scale-105 transition-all',
+										'flex flex-col rounded-xl p-4 px-6 transition-all hover:scale-105 hover:shadow-md',
 										{
-											'pointer-events-none bg-foreground/15 opacity-50':
+											'bg-foreground/15 pointer-events-none opacity-50':
 												levelIndex > maxLevel,
 											'bg-foreground text-background': !(levelIndex > maxLevel),
 											'bg-secondary text-secondary-foreground': isPerfect,
@@ -80,10 +80,10 @@ export const AllLevels = () => {
 				</div>
 			))}
 
-			<div className="absolute flex bottom-0 left-0 right-0 items-center justify-between p-4 z-10 md:bottom-1/8 md:left-1/2 md:right-auto md:translate-x-[-50%] md:gap-4">
+			<div className="absolute right-0 bottom-0 left-0 z-10 flex items-center justify-between p-4 md:right-auto md:bottom-1/8 md:left-1/2 md:translate-x-[-50%] md:gap-4">
 				<Link
 					href={'/number-chain'}
-					className="relative text-lg font-semibold bg-foreground text-background uppercase rounded-2xl p-3 px-6 shadow-md hover:scale-105 transition-all hover:shadow-lg"
+					className="bg-foreground text-background relative rounded-2xl p-3 px-6 text-lg font-semibold uppercase shadow-md transition-all hover:scale-105 hover:shadow-lg"
 				>
 					Home
 				</Link>

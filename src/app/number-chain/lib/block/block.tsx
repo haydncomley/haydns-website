@@ -12,6 +12,8 @@ export type BlockProps = ILevelBlock & {
 	couldLockIn?: boolean;
 	currentScore?: number;
 	levelCompleted?: boolean;
+	connectedTo?: Vec2;
+	index?: number;
 };
 
 export const Block = ({
@@ -26,6 +28,8 @@ export const Block = ({
 	currentScore,
 	levelCompleted,
 	operation,
+	connectedTo,
+	index,
 }: BlockProps) => {
 	const blockRef = useRef<HTMLDivElement>(null);
 
@@ -80,22 +84,23 @@ export const Block = ({
 	return (
 		<div
 			ref={blockRef}
-			className={classNames({
+			className={classNames('relative', {
 				[styles.in]: !couldLockIn,
 				[styles.wiggle]: inChain,
 			})}
 			style={{
 				animationDelay: `${(pos.x + pos.y) * 0.05}s`,
+				zIndex: index,
 			}}
 		>
 			<div
 				className={classNames(
-					'w-20 h-20 rounded-2xl bg-foreground/15 flex items-center justify-center transition-all hover:bg-foreground/25',
+					'bg-foreground/15 hover:bg-foreground/25 flex h-20 w-20 items-center justify-center rounded-2xl transition-all duration-150',
 					{
-						'!bg-transparent border-4 border-primary': inChain && !couldLockIn,
-						'scale-75 !bg-secondary text-secondary-foreground': couldLockIn,
-						'!bg-secondary text-transparent': isDone,
-						'border-4 border-foreground/15 !bg-transparent cursor-not-allowed':
+						'!bg-background border-primary border-4': inChain && !couldLockIn,
+						'!bg-secondary text-secondary-foreground scale-90': couldLockIn,
+						'!bg-secondary text-secondary': isDone,
+						'border-foreground/15 !bg-background cursor-not-allowed border-4':
 							isBlock,
 						[styles.pop]: inChain || isDone,
 					},
@@ -109,6 +114,23 @@ export const Block = ({
 							: value}
 				</p>
 			</div>
+
+			<div
+				className={classNames(
+					'absolute top-1/2 left-1/2 -z-1 rounded-full transition-all delay-75 duration-75',
+					{
+						'bg-primary': inChain,
+						'bg-secondary/50': couldLockIn || isDone,
+						'h-8 w-8 -translate-x-1/2 -translate-y-1/2': !connectedTo,
+						'h-8 w-full -translate-x-full -translate-y-1/2':
+							connectedTo?.x === -1,
+						'h-8 w-full -translate-y-1/2': connectedTo?.x === 1,
+						'h-full w-8 -translate-x-1/2 -translate-y-full':
+							connectedTo?.y === -1,
+						'h-full w-8 -translate-x-1/2': connectedTo?.y === 1,
+					},
+				)}
+			></div>
 		</div>
 	);
 };

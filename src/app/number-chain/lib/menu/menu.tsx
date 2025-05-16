@@ -19,52 +19,59 @@ export const Menu = () => {
 	}, []);
 
 	return (
-		<div className="w-full h-full flex flex-col items-center justify-center gap-10">
+		<div className="flex h-full w-full flex-col items-center justify-center gap-10">
 			<Link
 				href="/"
-				className="absolute top-4 left-4 rounded-full bg-foreground/5 p-3 hover:bg-foreground/10 transition-all"
+				className="bg-foreground/5 hover:bg-foreground/10 absolute top-4 left-4 rounded-full p-3 transition-all"
 			>
-				<ArrowLeft className="w-6 h-6" />
+				<ArrowLeft className="h-6 w-6" />
 			</Link>
 
-			<div className="flex flex-col gap-4 items-center -translate-y-12">
+			<div className="flex -translate-y-12 flex-col items-center gap-4">
 				<h1 className="text-4xl font-bold uppercase">
 					<WiggleText content="Number Chain" />
 				</h1>
 
-				<div className="flex flex-col gap-4 items-center">
+				<div className="flex flex-col items-center gap-4">
 					{lastLevelCompleted !== null ? (
-						<p className="text-sm text-foreground/50">
-							Played {lastLevelCompleted} out of {LEVELS.length} levels
-						</p>
+						<div className="text-center">
+							{lastLevelCompleted === LEVELS.length ? (
+								<p className="text-secondary animate-pulse font-semibold">
+									All levels completed!
+								</p>
+							) : null}
+							<p className="text-foreground/50 text-sm">
+								Completed {lastLevelCompleted} out of {LEVELS.length} levels
+							</p>
+						</div>
 					) : (
-						<p className="text-sm text-foreground/50">Loading...</p>
+						<p className="text-foreground/50 text-sm">Loading...</p>
 					)}
 
 					<a
 						href={`?level=${Math.min((lastLevelCompleted ?? 0) + 1, LEVELS.length)}`}
-						className="relative text-xl font-semibold bg-primary text-primary-foreground uppercase tracking-wide rounded-2xl p-3 w-48 text-center shadow-md hover:scale-105 transition-all hover:shadow-lg"
+						className="bg-primary text-primary-foreground relative w-48 rounded-2xl p-3 text-center text-xl font-semibold tracking-wide uppercase shadow-md transition-all hover:scale-105 hover:shadow-lg"
 					>
 						<span>{!lastLevelCompleted ? 'Play' : 'Continue'}</span>
 					</a>
 
 					<a
 						href="?allLevels=true"
-						className="relative text-base font-semibold bg-foreground text-background uppercase tracking-wide rounded-2xl p-2 w-36 text-center shadow-md hover:scale-105 transition-all hover:shadow-lg"
+						className="bg-foreground text-background relative w-36 rounded-2xl p-2 text-center text-base font-semibold tracking-wide uppercase shadow-md transition-all hover:scale-105 hover:shadow-lg"
 					>
 						<span>All Levels</span>
 					</a>
 				</div>
 			</div>
 
-			<div className="flex flex-col max-w-[90%] bg-foreground/5 text-foreground shadow-md p-4 gap-1 rounded-xl mt-16 absolute bottom-4 md:bottom-1/8">
-				<p className="font-bold text-md text-center">How to play</p>
+			<div className="bg-foreground/5 text-foreground absolute bottom-4 mt-16 flex max-w-[90%] flex-col gap-1 rounded-xl p-4 shadow-md md:bottom-1/8">
+				<p className="text-md text-center font-bold">How to play</p>
 				<div className="text-sm">
-					<b>1.</b> Swipe over blocks to start chaining them. <br />
+					<b>1.</b> Swipe the blocks to start chaining them. <br />
 					<b>2.</b> Let go to add the numbers together. <br />
 					<b>3.</b> Blocks will lock in when they equal the target. <br />
 					<b>4.</b> Lock in all blocks to beat the level.
-					<hr className="opacity-15 my-2" />
+					<hr className="my-2 opacity-15" />
 					<p className="text-center text-sm">
 						Try to beat the level in as few moves as possible
 					</p>

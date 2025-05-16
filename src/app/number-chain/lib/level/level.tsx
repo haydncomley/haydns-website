@@ -114,6 +114,19 @@ export const Level = ({ level }: LevelProps) => {
 
 		let levelStateNow = [...levelState];
 
+		const findPrevInChangeDir = (pos: Vec2) => {
+			const currentBlock = blocksInChain.findIndex(
+				(block) => block.x === pos.x && block.y === pos.y,
+			);
+
+			if (currentBlock === 0) return undefined;
+			const prevBlock = blocksInChain[currentBlock - 1];
+
+			return prevBlock
+				? { x: prevBlock.x - pos.x, y: prevBlock.y - pos.y }
+				: undefined;
+		};
+
 		levelStateNow = levelStateNow.map((row, y) =>
 			row.map((block, x) =>
 				blocksInChain.some(
@@ -123,6 +136,10 @@ export const Level = ({ level }: LevelProps) => {
 							...block,
 							isDone: currentScore === levelDetails.target,
 							value: block.value !== undefined ? currentScore : undefined,
+							connectedDir:
+								currentScore === levelDetails.target
+									? findPrevInChangeDir({ x, y })
+									: undefined,
 						}
 					: block,
 			),
@@ -175,7 +192,6 @@ export const Level = ({ level }: LevelProps) => {
 	}, [blocksInChain.length, isChaining]);
 
 	useEffect(() => {
-		console.log('Hello worlrd');
 		if (!boardRef.current) return;
 
 		const checkBoardWidth = () => {
@@ -209,7 +225,7 @@ export const Level = ({ level }: LevelProps) => {
 
 	return (
 		<div className="flex flex-col gap-2">
-			<div className="absolute flex flex-col top-4 left-1/2 -translate-x-1/2 items-center gap-2 md:top-[3rem]">
+			<div className="absolute top-4 left-1/2 flex -translate-x-1/2 flex-col items-center gap-2 md:top-[3rem]">
 				<div className="flex flex-col items-center text-center">
 					<h2 className="text-3xl font-bold whitespace-nowrap">
 						{levelDetails.name}
@@ -253,27 +269,47 @@ export const Level = ({ level }: LevelProps) => {
 				</div>
 			</div>
 
-			<div className="flex flex-col relative items-center justify-center max-h-[60vh]">
+			<div className="relative flex max-h-[60vh] flex-col items-center justify-center">
 				<div
 					ref={boardRef}
 					className={classNames(
-						'flex flex-col gap-2 transition-all origin-center',
+						'flex origin-center flex-col gap-3 transition-all',
 						{
-							'blur-md opacity-50 pointer-events-none': isLevelCompleted,
+							'pointer-events-none opacity-50 blur-md': isLevelCompleted,
 						},
 					)}
 				>
 					{levelState.map((row, rowIndex) => (
 						<div
 							key={rowIndex}
-							className="flex gap-2"
+							className="flex gap-3"
 						>
 							{row.map((block, colIndex) => {
-								const isInChain = blocksInChain.some(
+								const isInChain = blocksInChain.findIndex(
 									(block) => block.x === colIndex && block.y === rowIndex,
 								);
 								const couldLockIn =
-									currentScore === levelDetails.target && isInChain;
+									currentScore === levelDetails.target && isInChain !== -1;
+
+								let connectedDir: Vec2 | undefined;
+
+								if (isInChain !== -1) {
+									const blockConnectedTo = Math.max(
+										blocksInChain.findIndex(
+											(chainBlock) =>
+												chainBlock.x === colIndex && chainBlock.y === rowIndex,
+										) - 1,
+										0,
+									);
+
+									connectedDir =
+										blockConnectedTo >= 0
+											? {
+													x: blocksInChain[blockConnectedTo]?.x - colIndex,
+													y: blocksInChain[blockConnectedTo]?.y - rowIndex,
+												}
+											: undefined;
+								}
 
 								return (
 									<Block
@@ -283,13 +319,15 @@ export const Level = ({ level }: LevelProps) => {
 										levelCompleted={isLevelCompleted}
 										pos={{ x: colIndex, y: rowIndex }}
 										currentScore={currentScore}
-										inChain={isInChain}
+										inChain={isInChain !== -1}
+										index={blocksInChain.length - isInChain}
 										onHover={() => {
 											if (isChaining) addToChain({ x: colIndex, y: rowIndex });
 										}}
 										onTap={() => {
 											if (!isChaining) addToChain({ x: colIndex, y: rowIndex });
 										}}
+										connectedTo={block.connectedDir ?? connectedDir}
 									/>
 								);
 							})}
@@ -298,7 +336,7 @@ export const Level = ({ level }: LevelProps) => {
 				</div>
 
 				{isLevelCompleted ? (
-					<div className="absolute flex flex-col gap-3 rounded-xl p-2 whitespace-nowrap text-center items-center">
+					<div className="absolute flex flex-col items-center gap-3 rounded-xl p-2 text-center whitespace-nowrap">
 						<p className="text-3xl font-bold">
 							{!nextLevelDetails ? (
 								<WiggleText content="All Levels Completed" />
@@ -311,7 +349,7 @@ export const Level = ({ level }: LevelProps) => {
 								<WiggleText content="Category Cleared" />
 							) : null}
 						</p>
-						<div className="mt-4 flex gap-4 p-3 px-4 backdrop-blur-md rounded-xl border-2 border-foreground/15 shadow-md items-center bg-background/25">
+						<div className="border-foreground/15 bg-background/25 mt-4 flex items-center gap-4 rounded-xl border-2 p-3 px-4 shadow-md backdrop-blur-md">
 							<p className="flex flex-col">
 								<small>Total Turns</small>
 								<b className="text-xl">{turnsTaken}</b>
@@ -327,12 +365,12 @@ export const Level = ({ level }: LevelProps) => {
 							) : null}
 						</div>
 						{turnsTaken === levelDetails.par ? (
-							<p className="text-lg font-bold text-secondary uppercase tracking-wide">
+							<p className="text-secondary text-lg font-bold tracking-wide uppercase">
 								Perfect Game
 							</p>
 						) : null}
 						{turnsTaken < levelDetails.par ? (
-							<p className="text-lg font-bold text-primary uppercase tracking-wide">
+							<p className="text-primary text-lg font-bold tracking-wide uppercase">
 								Under Par
 							</p>
 						) : null}
@@ -340,25 +378,25 @@ export const Level = ({ level }: LevelProps) => {
 				) : null}
 			</div>
 
-			<div className="absolute flex bottom-0 left-0 right-0 items-center justify-between p-4 z-10 md:bottom-[4rem] md:left-1/2 md:right-auto md:translate-x-[-50%] md:gap-4">
+			<div className="absolute right-0 bottom-0 left-0 z-10 flex items-center justify-between p-4 md:right-auto md:bottom-[4rem] md:left-1/2 md:translate-x-[-50%] md:gap-4">
 				<Link
 					href={'/number-chain'}
-					className="relative text-lg font-semibold bg-foreground text-background uppercase rounded-2xl p-3 px-6 shadow-md hover:scale-105 transition-all hover:shadow-lg"
+					className="bg-foreground text-background relative rounded-2xl p-3 px-6 text-lg font-semibold uppercase shadow-md transition-all hover:scale-105 hover:shadow-lg"
 				>
 					Home
 				</Link>
 				<button
 					onClick={resetLevel}
-					className="relative text-lg font-semibold bg-secondary text-secondary-foreground uppercase rounded-2xl p-3 px-6 shadow-md hover:scale-105 transition-all hover:shadow-lg"
+					className="bg-secondary text-secondary-foreground relative rounded-2xl p-3 px-6 text-lg font-semibold uppercase shadow-md transition-all hover:scale-105 hover:shadow-lg"
 				>
 					Reset
 				</button>
 				<Link
 					href={`?level=${level + 1}`}
 					className={classNames(
-						'relative text-lg font-semibold bg-primary text-primary-foreground uppercase rounded-2xl p-3 px-6 shadow-md hover:scale-105 transition-all hover:shadow-lg',
+						'bg-primary text-primary-foreground relative rounded-2xl p-3 px-6 text-lg font-semibold uppercase shadow-md transition-all hover:scale-105 hover:shadow-lg',
 						{
-							'!bg-foreground/50 !text-background opacity-50 pointer-events-none':
+							'!bg-foreground/50 !text-background pointer-events-none opacity-50':
 								!nextLevelDetails || !isLevelCompleted,
 						},
 					)}

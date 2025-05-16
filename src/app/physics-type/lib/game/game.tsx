@@ -284,12 +284,12 @@ export const PhysicsTypeGame = () => {
 	}, []);
 
 	return (
-		<div className="w-full h-full flex flex-col items-center justify-center select-none overflow-hidden">
+		<div className="flex h-full w-full flex-col items-center justify-center overflow-hidden select-none">
 			<Link
 				href="/"
-				className="absolute top-4 left-4 rounded-full bg-foreground/5 p-3 hover:bg-foreground/10 transition-all z-10"
+				className="bg-foreground/5 hover:bg-foreground/10 absolute top-4 left-4 z-10 rounded-full p-3 transition-all"
 			>
-				<ArrowLeft className="w-6 h-6" />
+				<ArrowLeft className="h-6 w-6" />
 			</Link>
 
 			<p

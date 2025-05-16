@@ -152,7 +152,7 @@ export const Album = ({ playlist, parentRef, onDragChange }: AlbumProps) => {
 			>
 				<img
 					ref={imgRef}
-					className="w-full h-full object-cover"
+					className="h-full w-full object-cover"
 					src={playlist.images?.[0]?.url ?? 'https://placehold.co/300x300'}
 					alt={playlist.name}
 				/>
@@ -214,7 +214,7 @@ export const Album = ({ playlist, parentRef, onDragChange }: AlbumProps) => {
 											)}
 										>
 											<img
-												className="object-cover rounded-full w-1/2 h-1/2 pointer-events-none"
+												className="pointer-events-none h-1/2 w-1/2 rounded-full object-cover"
 												src={
 													playlist.images?.[0]?.url ??
 													'https://placehold.co/150x150'

@@ -48,7 +48,7 @@ export const VirtualKeyboard = () => {
 	return (
 		<div
 			ref={keyboardRef}
-			className="flex flex-col p-4 gap-2 transition-all opacity-0"
+			className="flex flex-col gap-2 p-4 opacity-0 transition-all"
 		>
 			{KEYBOARD_ROWS.map((row, index) => (
 				<div
@@ -61,7 +61,7 @@ export const VirtualKeyboard = () => {
 							onMouseDown={() => sendClickEvent(key.toLowerCase(), false)}
 							onTouchStart={() => sendClickEvent(key.toLowerCase(), false)}
 							className={classNames(
-								'w-10 h-10 bg-background border border-foreground/15 rounded-xl hover:bg-foreground/5 transition-all duration-100',
+								'bg-background border-foreground/15 hover:bg-foreground/5 h-10 w-10 rounded-xl border transition-all duration-100',
 								{
 									'!bg-secondary': heldKeys.includes(key.toLowerCase()),
 								},
