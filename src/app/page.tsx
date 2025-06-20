@@ -1,6 +1,16 @@
+import Link from 'next/link';
+
 import { Socials } from '~/components/socials';
 
 const modules = [
+	{
+		name: 'Gaming Dashboard',
+		path: 'https://redditplayrust.com/stats',
+	},
+	{
+		name: 'AI Chatbot',
+		path: 'https://tfree.chat/',
+	},
 	{
 		name: 'Vinyl Viewer',
 		path: '/vinyl-player',
@@ -36,23 +46,23 @@ export default function Page() {
 							aria-label={`${module.name} Project`}
 							title={module.name}
 						>
-							<a
+							<Link
 								href={module.path}
+								target={module.path.startsWith('/') ? '_self' : '_blank'}
 								className="relative flex h-full w-full items-center justify-center font-black uppercase"
 							>
 								<video
-									src={`/modules/${module.path.replaceAll('/', '')}.mp4`}
+									src={`/modules/${module.name.replaceAll(' ', '-').toLowerCase()}.mp4`}
 									className="h-full w-full object-cover"
 									autoPlay
 									muted
 									loop
 									playsInline
 								/>
-
-								<span className="absolute bottom-0 left-0 p-2 pb-1 text-white mix-blend-exclusion">
-									{module.name}
+								<span className="absolute bottom-0 left-0 overflow-hidden rounded-tr-md px-2.5 py-0.5 mix-blend-exclusion shadow-sm backdrop-blur-xl">
+									<span className="text-white">{module.name}</span>
 								</span>
-							</a>
+							</Link>
 						</article>
 					))}
 				</div>
