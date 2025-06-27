@@ -4,10 +4,10 @@ import Link from 'next/link';
 import { Socials } from '~/components/socials';
 
 const modules = [
-	// {
-	// 	name: 'Video Editor',
-	// 	path: '/video-editor',
-	// },
+	{
+		name: 'Video Editor',
+		path: '/video-editor',
+	},
 	{
 		name: 'AI Chatbot',
 		path: 'https://tfree.chat/',

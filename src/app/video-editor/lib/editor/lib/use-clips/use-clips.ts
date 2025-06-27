@@ -1,5 +1,7 @@
 import { createContext, use } from 'react';
 
+import { PlaybackContext } from '../use-playback';
+
 export type Clip = {
 	id: string;
 	name: string;
@@ -19,14 +21,18 @@ export const ClipsContext = createContext<{
 
 export const useClips = () => {
 	const { clips, setClips } = use(ClipsContext);
+	const { setTotalTime } = use(PlaybackContext);
 
 	const addClip = (newClip: Clip, index?: number) => {
 		if (typeof index === 'number') {
 			const newClips = [...clips];
 			newClips.splice(index, 0, newClip);
+			setTotalTime(newClips.reduce((acc, clip) => acc + clip.length, 0));
 			return newClips;
 		} else {
-			return setClips([...clips, newClip]);
+			const newClips = [...clips, newClip];
+			setTotalTime(newClips.reduce((acc, clip) => acc + clip.length, 0));
+			return setClips(newClips);
 		}
 	};
 
@@ -38,6 +44,7 @@ export const useClips = () => {
 				: clips.findIndex((c) => c.id === clip.id),
 			1,
 		);
+		setTotalTime(newClips.reduce((acc, clip) => acc + clip.length, 0));
 		setClips(newClips);
 	};
 

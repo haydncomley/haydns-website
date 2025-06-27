@@ -32,7 +32,6 @@ export const Editor = () => {
 			<ClipsContext value={{ clips, setClips }}>
 				<div className="flex h-full w-full flex-col overflow-hidden">
 					<div className="flex w-full basis-5/6">
-						Project Space
 						<Preview />
 					</div>
 					<div className="flex w-full basis-1/6">

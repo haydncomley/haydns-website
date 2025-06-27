@@ -23,6 +23,6 @@ export const useCurrentClip = () => {
 		currentClip: clip,
 		currentClipData: clipDelta,
 		currentClipClipPercentage: clipPercentage,
-		currentClipClipStart: clipStart,
+		currentClipStart: clipStart,
 	};
 };
