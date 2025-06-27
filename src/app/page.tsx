@@ -1,12 +1,13 @@
+import { ExternalLink } from 'lucide-react';
 import Link from 'next/link';
 
 import { Socials } from '~/components/socials';
 
 const modules = [
-	{
-		name: 'Gaming Dashboard',
-		path: 'https://redditplayrust.com/stats',
-	},
+	// {
+	// 	name: 'Video Editor',
+	// 	path: '/video-editor',
+	// },
 	{
 		name: 'AI Chatbot',
 		path: 'https://tfree.chat/',
@@ -20,8 +21,16 @@ const modules = [
 		path: '/number-chain',
 	},
 	{
+		name: 'Gaming Dashboard',
+		path: 'https://redditplayrust.com/stats',
+	},
+	{
 		name: 'Physics Type',
 		path: '/physics-type',
+	},
+	{
+		name: 'Personal Website',
+		path: 'https://haydncomley.com',
 	},
 ];
 export default function Page() {
@@ -59,8 +68,13 @@ export default function Page() {
 									loop
 									playsInline
 								/>
-								<span className="absolute bottom-0 left-0 overflow-hidden rounded-tr-md px-2.5 py-0.5 mix-blend-exclusion shadow-sm backdrop-blur-xl">
-									<span className="text-white">{module.name}</span>
+								<span className="bg-foreground/50 absolute bottom-0 left-0 overflow-hidden rounded-tr-md px-2.5 py-0.5 shadow-sm backdrop-blur-sm">
+									<span className="text-background flex items-center gap-2 text-xs tracking-wider">
+										{module.name}
+										{module.path.startsWith('http') && (
+											<ExternalLink className="h-3 w-3" />
+										)}
+									</span>
 								</span>
 							</Link>
 						</article>
