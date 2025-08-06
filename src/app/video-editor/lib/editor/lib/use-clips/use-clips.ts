@@ -7,6 +7,7 @@ export type Clip = {
 	name: string;
 	length: number;
 	source: string;
+	raw: File;
 	loading?: boolean;
 	thumbnail?: string;
 };

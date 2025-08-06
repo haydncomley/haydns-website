@@ -33,6 +33,7 @@ export const Timeline = ({ children }: TimelineProps) => {
 						name: file.name,
 						source: sourceUrl,
 						loading: false,
+						raw: file,
 					});
 					video.remove();
 				});

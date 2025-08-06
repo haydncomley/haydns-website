@@ -4,12 +4,16 @@ import Link from 'next/link';
 import { Socials } from '~/components/socials';
 
 const modules = [
+	// {
+	// 	name: 'Video Editor',
+	// 	path: '/video-editor',
+	// },
 	{
-		name: 'Video Editor',
-		path: '/video-editor',
+		name: 'AI Stream Assistant',
+		path: 'https://tabzero.gg',
 	},
 	{
-		name: 'AI Chatbot',
+		name: 'ChatGPT Clone',
 		path: 'https://tfree.chat/',
 	},
 	{
@@ -29,7 +33,7 @@ const modules = [
 		path: '/physics-type',
 	},
 	{
-		name: 'Personal Website',
+		name: 'Custom Framework',
 		path: 'https://haydncomley.com',
 	},
 ];
@@ -47,7 +51,7 @@ export default function Page() {
 			</div>
 
 			<div className="-m-4 flex-1 overflow-auto p-4">
-				<div className="md grid grid-cols-1 gap-4 p-4 pt-0 sm:grid-cols-2 md:grid-cols-4 2xl:grid-cols-6">
+				<div className="md grid grid-cols-1 gap-4 p-4 pt-0 sm:grid-cols-2 xl:grid-cols-4">
 					{modules.map((module) => (
 						<article
 							key={module.path}
