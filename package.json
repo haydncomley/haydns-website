@@ -1,39 +1,39 @@
 {
-  "name": "haydns-website",
-  "version": "0.1.0",
-  "private": true,
-  "scripts": {
-    "dev": "next dev --turbopack",
-    "build": "next build",
-    "start": "next start",
-    "lint": "next lint"
-  },
-  "dependencies": {
-    "@spotify/web-api-ts-sdk": "^1.2.0",
-    "@tanstack/react-query": "^5.68.0",
-    "classnames": "^2.5.1",
-    "eslint-config-prettier": "^10.1.1",
-    "js-confetti": "^0.12.0",
-    "lucide-react": "^0.482.0",
-    "matter-js": "^0.20.0",
-    "next": "15.2.2",
-    "prettier": "^3.5.3",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "seed-color": "^2.0.1"
-  },
-  "devDependencies": {
-    "@eslint/eslintrc": "^3",
-    "@tailwindcss/postcss": "^4",
-    "@types/matter-js": "^0.19.8",
-    "@types/node": "^20",
-    "@types/react": "^19",
-    "@types/react-dom": "^19",
-    "eslint": "^9",
-    "eslint-config-next": "15.2.2",
-    "eslint-plugin-prettier": "^5.2.3",
-    "prettier-plugin-tailwindcss": "^0.6.11",
-    "tailwindcss": "^4",
-    "typescript": "^5"
-  }
+	"name": "haydns-website",
+	"version": "0.1.0",
+	"private": true,
+	"scripts": {
+		"dev": "next dev --turbopack",
+		"build": "next build",
+		"start": "next start",
+		"lint": "next lint"
+	},
+	"dependencies": {
+		"@spotify/web-api-ts-sdk": "^1.2.0",
+		"@tanstack/react-query": "^5.68.0",
+		"classnames": "^2.5.1",
+		"eslint-config-prettier": "^10.1.1",
+		"js-confetti": "^0.12.0",
+		"lucide-react": "^0.482.0",
+		"matter-js": "^0.20.0",
+		"next": "15.2.8",
+		"prettier": "^3.5.3",
+		"react": "^19.0.1",
+		"react-dom": "^19.0.1",
+		"seed-color": "^2.0.1"
+	},
+	"devDependencies": {
+		"@eslint/eslintrc": "^3",
+		"@tailwindcss/postcss": "^4",
+		"@types/matter-js": "^0.19.8",
+		"@types/node": "^20",
+		"@types/react": "^19",
+		"@types/react-dom": "^19",
+		"eslint": "^9",
+		"eslint-config-next": "15.2.2",
+		"eslint-plugin-prettier": "^5.2.3",
+		"prettier-plugin-tailwindcss": "^0.6.11",
+		"tailwindcss": "^4",
+		"typescript": "^5"
+	}
 }
