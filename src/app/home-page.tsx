@@ -1,7 +1,7 @@
 'use client';
 
 import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { startTransition } from 'react';
+import { startTransition, useEffect, useRef } from 'react';
 
 import { Navbar } from '~/components/navbar';
 import { ProjectCard } from '~/components/project-card';
@@ -13,8 +13,7 @@ import {
 } from '~/lib/projects';
 import type { ProjectCategory } from '~/lib/types';
 
-const DEFAULT_DESCRIPTION =
-	'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.';
+const PARALLAX_SPEED = 0.5; // Background scrolls at this rate relative to content
 
 const getSelectedFilters = (filterValue: string | null): ProjectCategory[] => {
 	if (!filterValue) {
@@ -36,6 +35,7 @@ const getSelectedFilters = (filterValue: string | null): ProjectCategory[] => {
 };
 
 export const HomePage = () => {
+	const mainRef = useRef<HTMLElement>(null);
 	const pathname = usePathname();
 	const router = useRouter();
 	const searchParams = useSearchParams();
@@ -46,6 +46,28 @@ export const HomePage = () => {
 	const visibleProjectIndexes = new Map(
 		visibleProjects.map((project, index) => [project.slug, index]),
 	);
+
+	useEffect(() => {
+		let ticking = false;
+
+		const updateBackground = () => {
+			if (mainRef.current) {
+				const scrollY = window.scrollY;
+				mainRef.current.style.backgroundPositionY = `${scrollY * PARALLAX_SPEED}px`;
+			}
+			ticking = false;
+		};
+
+		const handleScroll = () => {
+			if (!ticking) {
+				requestAnimationFrame(updateBackground);
+				ticking = true;
+			}
+		};
+
+		window.addEventListener('scroll', handleScroll, { passive: true });
+		return () => window.removeEventListener('scroll', handleScroll);
+	}, []);
 
 	const handleToggleFilter = (filter: ProjectCategory) => {
 		const nextFilters = activeFilters.includes(filter)
@@ -77,12 +99,14 @@ export const HomePage = () => {
 
 	return (
 		<main
+			ref={mainRef}
 			className="flex min-h-full w-full flex-col items-center overflow-hidden pb-20"
 			style={{
 				backgroundColor: 'var(--background)',
 				backgroundImage:
 					'repeating-linear-gradient(180deg, var(--foreground-faded) 0 1px, transparent 1px 2.5rem)',
 				backgroundSize: '100% 2.5rem',
+				willChange: 'background-position',
 			}}
 		>
 			<Navbar
@@ -107,7 +131,7 @@ export const HomePage = () => {
 						<ProjectCard
 							align={align}
 							colors={project.colors}
-							description={DEFAULT_DESCRIPTION}
+							description={project.description}
 							href={project.path}
 							link={project.link}
 							title={project.name}

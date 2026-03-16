@@ -156,7 +156,7 @@ export const ProjectCard = ({
 	const isActive = isInViewOnMobile;
 	const isStacked = isDesktopPointer && isHoveredOnDesktop;
 	const titleLayerStyle = {
-		transform: `translate3d(0, 0, ${isStacked ? 40 : 0}px)`,
+		transform: `translate3d(0, 0, ${isStacked ? 60 : 0}px)`,
 		transformStyle: 'preserve-3d',
 	} as React.CSSProperties;
 	const mediaLayerStyle = {
@@ -164,7 +164,7 @@ export const ProjectCard = ({
 		transformStyle: 'preserve-3d',
 	} as React.CSSProperties;
 	const descriptionLayerStyle = {
-		transform: `translate3d(0, 0, ${isStacked ? -10 : 0}px)`,
+		transform: `translate3d(0, 0, ${isStacked ? -40 : 0}px)`,
 		transformStyle: 'preserve-3d',
 	} as React.CSSProperties;
 
@@ -177,7 +177,7 @@ export const ProjectCard = ({
 			onMouseMove={handleMouseMove}
 			onMouseLeave={handleMouseLeave}
 			className={classNames(
-				`group flex w-full flex-col gap-0 transition-all hover:z-10 hover:-translate-y-20 hover:scale-110 lg:w-md ${cardRotate} pointer-events-auto`,
+				`group flex w-full flex-col gap-0 transition-all hover:z-10 hover:-translate-y-20 md:w-xs lg:w-md ${cardRotate} pointer-events-auto`,
 				{
 					'z-10 scale-100': isActive,
 				},
@@ -240,7 +240,7 @@ export const ProjectCard = ({
 				>
 					<div
 						className={classNames(
-							`flex -translate-y-4 items-center gap-8 rounded-4xl bg-(--background) px-6 py-4 pr-4 text-(--foreground) shadow-md transition-all group-hover:scale-105 group-hover:shadow-lg lg:translate-x-2 ${titleRotate}`,
+							`flex -translate-y-4 items-center gap-8 rounded-4xl bg-(--background) px-6 py-4 pr-4 text-(--foreground) shadow-md transition-all group-hover:scale-105 group-hover:shadow-xl md:translate-x-2 ${titleRotate}`,
 							{
 								'shadow-lg': isActive,
 								'-rotate-10!': isActive && isEnd,
@@ -285,9 +285,9 @@ export const ProjectCard = ({
 				>
 					<div
 						className={classNames(
-							`mt-[-60%] w-full rounded-4xl border-2 border-dashed border-(--foreground) p-4 pt-[60%] text-(--background) opacity-50 transition-all group-hover:bg-(--foreground) group-hover:opacity-100 group-hover:shadow-md lg:translate-x-2 ${descriptionRotate}`,
+							`mt-[-60%] w-full rounded-4xl border-2 border-dashed border-(--foreground) p-4 pt-[60%] text-(--background) opacity-50 transition-all group-hover:bg-(--foreground) group-hover:opacity-100 group-hover:shadow-xl md:translate-x-2 ${descriptionRotate}`,
 							{
-								'bg-(--foreground) opacity-100 shadow-md': isActive,
+								'bg-(--foreground) opacity-100 shadow-xl': isActive,
 								'-rotate-12': isActive && isEnd,
 								'rotate-6!': isActive && !isEnd,
 							},
@@ -295,7 +295,7 @@ export const ProjectCard = ({
 					>
 						<p
 							className={classNames(
-								'overflow-hidden p-1 leading-tight opacity-0 transition-all group-hover:max-h-[10rem] group-hover:pt-6 group-hover:opacity-100 lg:max-h-0',
+								'overflow-hidden p-1 leading-tight opacity-0 transition-all group-hover:max-h-[10rem] group-hover:pt-8 group-hover:opacity-100 md:max-h-0',
 								{
 									'max-h-[10rem] opacity-100': isActive,
 								},

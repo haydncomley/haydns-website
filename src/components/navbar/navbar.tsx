@@ -1,7 +1,7 @@
 'use client';
 
 import classNames from 'classnames';
-import { Check, CheckCheck, Eye, EyeClosed, X } from 'lucide-react';
+import { Eye, EyeClosed, X } from 'lucide-react';
 import { Fragment } from 'react';
 
 import { PROJECT_FILTERS, PROJECTS } from '~/lib/projects';
@@ -17,13 +17,8 @@ type NavbarProps = {
 	onToggleFilter: (filter: ProjectCategory) => void;
 };
 
-const getRandomBlinkColour = () => {
-	const hue = Math.floor(Math.random() * 360);
-	const saturation = 72 + Math.floor(Math.random() * 18);
-	const lightness = 52 + Math.floor(Math.random() * 12);
-
-	return `hsl(${hue} ${saturation}% ${lightness}%)`;
-};
+const getRandomProjectColour = () =>
+	PROJECTS[Math.floor(Math.random() * PROJECTS.length)].colors[0];
 
 const triggerCharacterAnimation = (element: HTMLSpanElement) => {
 	element.classList.remove(styles.characterActive);
@@ -37,7 +32,7 @@ export const Navbar = ({ activeFilters, onToggleFilter }: NavbarProps) => {
 	).length;
 
 	return (
-		<div className="flex flex-col items-center gap-8 px-8 py-16">
+		<div className="flex flex-col items-center gap-2 px-8 py-16">
 			<div className="flex flex-col items-center gap-1">
 				<h1 className="text-2xl font-bold md:text-4xl">
 					<span className="font-normal opacity-50">https://</span>
@@ -53,7 +48,7 @@ export const Navbar = ({ activeFilters, onToggleFilter }: NavbarProps) => {
 								onMouseEnter={(event) => {
 									event.currentTarget.style.setProperty(
 										'--blink-colour',
-										getRandomBlinkColour(),
+										getRandomProjectColour(),
 									);
 									triggerCharacterAnimation(event.currentTarget);
 								}}

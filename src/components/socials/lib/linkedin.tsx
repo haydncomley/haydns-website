@@ -4,7 +4,7 @@ export const LinkedInLogo = () => (
 		height="800px"
 		width="800px"
 		xmlns="http://www.w3.org/2000/svg"
-		viewBox="0 0 260.366 260.366"
+		viewBox="-20 -20 300 300"
 	>
 		<g>
 			<path

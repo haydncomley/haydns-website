@@ -18,9 +18,9 @@ export const ProjectRow = ({
 	<section
 		aria-hidden={!isVisible}
 		className={classNames(
-			'pointer-events-none flex w-full max-w-6xl justify-center overflow-visible px-12 transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] lg:px-16',
+			'pointer-events-none flex w-full max-w-6xl justify-center overflow-visible px-12 transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] md:px-16',
 			{
-				'mt-16 translate-y-0 opacity-100 lg:mt-0': isVisible,
+				'mt-16 translate-y-0 opacity-100 md:mt-0': isVisible,
 				'translate-y-10 opacity-0': !isVisible,
 			},
 		)}
@@ -45,13 +45,13 @@ export const ProjectRow = ({
 			>
 				<div
 					className={classNames(
-						'flex w-full justify-center transition-[margin,transform,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] lg:h-80',
+						'flex w-full justify-center transition-[margin,transform,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] md:h-80',
 						{
-							'mt-8 lg:-mt-16': isVisible && !isFirst,
-							'-mt-8 lg:mt-auto': isVisible && isFirst,
-							'mt-0 lg:mt-0': !isVisible,
-							'lg:justify-end': align === 'end',
-							'lg:justify-start': align === 'start',
+							'mt-8 md:-mt-16': isVisible && !isFirst,
+							'-mt-8 md:mt-auto': isVisible && isFirst,
+							'mt-0 md:mt-0': !isVisible,
+							'md:justify-end': align === 'end',
+							'md:justify-start': align === 'start',
 						},
 					)}
 				>

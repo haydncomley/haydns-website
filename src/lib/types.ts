@@ -1,3 +1,5 @@
+import type React from 'react';
+
 export type Module = {
 	id: string;
 	name: string;
@@ -15,4 +17,5 @@ export type Project = {
 	link: string[];
 	colors: [foreground: string, background: string];
 	categories: ProjectCategory[];
+	description?: React.ReactNode | React.ReactNode[];
 };
