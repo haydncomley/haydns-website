@@ -5,3 +5,14 @@ export type Module = {
 	icon: string;
 	path: string;
 };
+
+export type ProjectCategory = 'experiments' | 'projects' | 'games';
+
+export type Project = {
+	slug: string;
+	name: string;
+	path: string;
+	link: string[];
+	colors: [foreground: string, background: string];
+	categories: ProjectCategory[];
+};

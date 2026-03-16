@@ -3,6 +3,8 @@ import { Rubik } from 'next/font/google';
 import './globals.css';
 import type { ReactNode } from 'react';
 
+import { PROJECTS } from '~/lib/projects';
+
 import Providers from './providers';
 
 const rubik = Rubik({
@@ -13,7 +15,8 @@ const rubik = Rubik({
 
 export const metadata: Metadata = {
 	title: 'haydns.website',
-	description: 'My website for some stuff and some things.',
+	description:
+		'a collection of all of my side-projects, experiments and games!',
 };
 
 type RootLayoutProps = {
@@ -51,6 +54,10 @@ export default function RootLayout({ children }: RootLayoutProps) {
 				<link
 					rel="manifest"
 					href="/site.webmanifest"
+				/>
+				<meta
+					name="theme-color"
+					content={PROJECTS[0].colors[0]}
 				/>
 			</head>
 			<body className={`${rubik.variable} antialiased`}>

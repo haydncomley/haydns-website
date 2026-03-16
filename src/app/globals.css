@@ -3,6 +3,7 @@
 :root {
 	--background: #ffffff;
 	--foreground: #1b1b1b;
+	--foreground-faded: #0000000f;
 	--primary: #ff0062;
 	--primary-foreground: #ffffff;
 	--secondary: #268383;
@@ -21,8 +22,10 @@
 
 @media (prefers-color-scheme: dark) {
 	:root {
-		--background: #1b1b1b;
+		--background: #171418;
 		--foreground: #ededed;
+		--foreground-faded: #453d472e;
+		color-scheme: dark;
 	}
 }
 

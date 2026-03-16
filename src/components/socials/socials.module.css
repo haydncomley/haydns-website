@@ -9,7 +9,7 @@
 		height: 100%;
 
 		& path {
-			fill: var(--foreground);
+			fill: currentColor;
 		}
 	}
 }

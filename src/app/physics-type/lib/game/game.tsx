@@ -51,6 +51,11 @@ export const SPECIAL_WORDS = [
 		foreground: '#275053',
 		background: '#eaf5f5',
 	},
+	{
+		world: 'Wise',
+		foreground: '#163300',
+		background: '#9fe870',
+	},
 ];
 
 export const PhysicsTypeGame = () => {
