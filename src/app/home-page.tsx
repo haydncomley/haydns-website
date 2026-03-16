@@ -77,7 +77,7 @@ export const HomePage = () => {
 
 	return (
 		<main
-			className="flex min-h-full w-full flex-col items-center gap-16 overflow-hidden pb-20 lg:gap-1"
+			className="flex min-h-full w-full flex-col items-center overflow-hidden pb-20"
 			style={{
 				backgroundColor: 'var(--background)',
 				backgroundImage:

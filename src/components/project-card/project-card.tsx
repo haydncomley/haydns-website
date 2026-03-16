@@ -177,7 +177,7 @@ export const ProjectCard = ({
 			onMouseMove={handleMouseMove}
 			onMouseLeave={handleMouseLeave}
 			className={classNames(
-				`group flex w-full flex-col gap-0 transition-all hover:z-10 hover:-translate-y-20 hover:scale-110 lg:w-md ${cardRotate}`,
+				`group flex w-full flex-col gap-0 transition-all hover:z-10 hover:-translate-y-20 hover:scale-110 lg:w-md ${cardRotate} pointer-events-auto`,
 				{
 					'z-10 scale-100': isActive,
 				},

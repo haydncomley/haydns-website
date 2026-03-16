@@ -18,10 +18,10 @@ export const ProjectRow = ({
 	<section
 		aria-hidden={!isVisible}
 		className={classNames(
-			'flex w-full max-w-6xl justify-center overflow-visible px-12 transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] lg:px-16',
+			'pointer-events-none flex w-full max-w-6xl justify-center overflow-visible px-12 transition-[opacity,transform] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] lg:px-16',
 			{
-				'translate-y-0 opacity-100': isVisible,
-				'pointer-events-none -translate-y-10 opacity-0': !isVisible,
+				'mt-16 translate-y-0 opacity-100 lg:mt-0': isVisible,
+				'translate-y-10 opacity-0': !isVisible,
 			},
 		)}
 		style={{
