@@ -1,51 +1,38 @@
 'use client';
 
-import { usePathname, useRouter, useSearchParams } from 'next/navigation';
-import { startTransition, useEffect, useRef } from 'react';
+import { usePathname, useRouter } from 'next/navigation';
+import { startTransition, useEffect, useRef, useState } from 'react';
 
 import { Navbar } from '~/components/navbar';
 import { ProjectCard } from '~/components/project-card';
 import { ProjectRow } from '~/components/project-row';
-import {
-	ALL_PROJECT_CATEGORIES,
-	isProjectCategory,
-	PROJECTS,
-} from '~/lib/projects';
+import { ALL_PROJECT_CATEGORIES, PROJECTS } from '~/lib/projects';
+import { getSelectedFilters } from '~/lib/search-params';
 import type { ProjectCategory } from '~/lib/types';
 
 const PARALLAX_SPEED = 0.5; // Background scrolls at this rate relative to content
 
-const getSelectedFilters = (filterValue: string | null): ProjectCategory[] => {
-	if (!filterValue) {
-		return ALL_PROJECT_CATEGORIES;
-	}
-
-	const selectedFilters = filterValue
-		.split(',')
-		.map((value) => value.trim())
-		.filter(isProjectCategory);
-
-	if (selectedFilters.length === 0) {
-		return ALL_PROJECT_CATEGORIES;
-	}
-
-	return ALL_PROJECT_CATEGORIES.filter((category) =>
-		selectedFilters.includes(category),
-	);
+export type HomePageProps = {
+	initialActiveFilters: ProjectCategory[];
 };
 
-export const HomePage = () => {
+export const HomePage = ({ initialActiveFilters }: HomePageProps) => {
 	const mainRef = useRef<HTMLElement>(null);
 	const pathname = usePathname();
 	const router = useRouter();
-	const searchParams = useSearchParams();
-	const activeFilters = getSelectedFilters(searchParams.get('filter'));
+	const [activeFilters, setActiveFilters] =
+		useState<ProjectCategory[]>(initialActiveFilters);
+	const initialActiveFiltersKey = initialActiveFilters.join(',');
 	const visibleProjects = PROJECTS.filter((project) =>
 		project.categories.some((category) => activeFilters.includes(category)),
 	);
 	const visibleProjectIndexes = new Map(
 		visibleProjects.map((project, index) => [project.slug, index]),
 	);
+
+	useEffect(() => {
+		setActiveFilters(initialActiveFilters);
+	}, [initialActiveFiltersKey]);
 
 	useEffect(() => {
 		let ticking = false;
@@ -80,7 +67,7 @@ export const HomePage = () => {
 			return;
 		}
 
-		const nextSearchParams = new URLSearchParams(searchParams.toString());
+		const nextSearchParams = new URLSearchParams(window.location.search);
 
 		if (nextFilters.length === ALL_PROJECT_CATEGORIES.length) {
 			nextSearchParams.delete('filter');
@@ -91,6 +78,8 @@ export const HomePage = () => {
 		const nextUrl = nextSearchParams.size
 			? `${pathname}?${nextSearchParams.toString()}`
 			: pathname;
+
+		setActiveFilters(nextFilters);
 
 		startTransition(() => {
 			router.replace(nextUrl, { scroll: false });

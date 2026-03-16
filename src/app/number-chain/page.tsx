@@ -1,13 +1,22 @@
-import { Suspense } from 'react';
-
-import { Spinner } from '~/components/spinner';
+import {
+	getNumberChainQueryState,
+	type PageSearchParams,
+} from '~/lib/search-params';
 
 import { NumberChainGame } from './lib/game';
 
-export default function Page() {
+type PageProps = {
+	searchParams: Promise<PageSearchParams>;
+};
+
+export default async function Page({ searchParams }: PageProps) {
+	const params = await searchParams;
+	const { currentLevel, viewingAllLevels } = getNumberChainQueryState(params);
+
 	return (
-		<Suspense fallback={<Spinner />}>
-			<NumberChainGame />
-		</Suspense>
+		<NumberChainGame
+			currentLevel={currentLevel}
+			viewingAllLevels={viewingAllLevels}
+		/>
 	);
 }
