@@ -51,6 +51,21 @@ export const PROJECTS: Project[] = [
 		),
 	},
 	{
+		slug: 'marketing-portfolio',
+		name: 'Marketing Portfolio',
+		path: 'https://maiacomley.com',
+		link: ['https://', 'maiacomley.com'],
+		colors: ['#f1f6df', '#ec6334'],
+		categories: ['projects'],
+		description: (
+			<>
+				My sister had just graduated, was back from travelling and was looking
+				for a way to <b>showcase her work in marketing</b> - in a single day day
+				we sat down, and whipped up a nice looking portfolio website.
+			</>
+		),
+	},
+	{
 		slug: 'daily-word-game',
 		name: 'Daily Word Game',
 		path: 'https://cipherwords.io',
