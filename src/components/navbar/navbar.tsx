@@ -3,7 +3,13 @@
 import classNames from 'classnames';
 import { Eye, EyeClosed, Moon, Sun } from 'lucide-react';
 import Image from 'next/image';
-import { Fragment, useState, useSyncExternalStore } from 'react';
+import {
+	Fragment,
+	useEffect,
+	useRef,
+	useState,
+	useSyncExternalStore,
+} from 'react';
 
 import { useServerThemePreference } from '~/app/providers';
 import { PROJECT_FILTERS, PROJECTS } from '~/lib/projects';
@@ -20,6 +26,7 @@ import { Socials } from '../socials';
 
 const DOMAIN = 'haydns.website';
 const PHRASES = ['Hello, world!', '*yappa-yappa*'];
+const FACE_PHRASE_VISIBLE_MS = 2200;
 
 type NavbarProps = {
 	activeFilters: ProjectCategory[];
@@ -113,12 +120,61 @@ const triggerCharacterAnimation = (element: HTMLSpanElement) => {
 
 export const Navbar = ({ activeFilters, onToggleFilter }: NavbarProps) => {
 	const themePreference = useThemePreference();
+	const facePhraseTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
+		null,
+	);
+	const [isFaceActive, setIsFaceActive] = useState(false);
 	const [phraseIndex, setPhraseIndex] = useState(0);
 	const phrase = PHRASES[phraseIndex];
 	const projectsVisible = PROJECTS.filter((filter) =>
 		filter.categories.some((category) => activeFilters.includes(category)),
 	).length;
 	const isDarkMode = themePreference === 'dark';
+
+	useEffect(
+		() => () => {
+			if (facePhraseTimeoutRef.current) {
+				clearTimeout(facePhraseTimeoutRef.current);
+			}
+		},
+		[],
+	);
+
+	const clearFacePhraseTimeout = () => {
+		if (!facePhraseTimeoutRef.current) {
+			return;
+		}
+
+		clearTimeout(facePhraseTimeoutRef.current);
+		facePhraseTimeoutRef.current = null;
+	};
+
+	const showFacePhrase = (autoHide = false) => {
+		clearFacePhraseTimeout();
+		setIsFaceActive(true);
+
+		if (!autoHide) {
+			return;
+		}
+
+		facePhraseTimeoutRef.current = setTimeout(() => {
+			setIsFaceActive(false);
+			facePhraseTimeoutRef.current = null;
+		}, FACE_PHRASE_VISIBLE_MS);
+	};
+
+	const hideFacePhrase = () => {
+		clearFacePhraseTimeout();
+		setIsFaceActive(false);
+	};
+
+	const handleFaceClick = () => {
+		setPhraseIndex((index) => (index + 1 >= PHRASES.length ? 0 : index + 1));
+
+		showFacePhrase(
+			!window.matchMedia('(hover: hover) and (pointer: fine)').matches,
+		);
+	};
 
 	const handleToggleThemePreference = () => {
 		const mediaQuery = getThemePreferenceMediaQuery();
@@ -138,34 +194,64 @@ export const Navbar = ({ activeFilters, onToggleFilter }: NavbarProps) => {
 	return (
 		<div className="flex flex-col items-center gap-2 px-8 py-16">
 			<div className="flex flex-col items-center gap-1">
-				<div
-					className="group flex cursor-pointer items-center transition-transform active:scale-90"
-					onClick={() => {
-						setPhraseIndex((index) => {
-							const nextIndex = index + 1;
-							return nextIndex >= PHRASES.length ? 0 : nextIndex;
-						});
+				<button
+					aria-label="Show a phrase from Haydn"
+					className="flex cursor-pointer items-center transition-transform active:scale-90"
+					onBlur={hideFacePhrase}
+					onClick={handleFaceClick}
+					onFocus={() => showFacePhrase()}
+					onPointerEnter={(event) => {
+						if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+							showFacePhrase();
+						}
 					}}
+					onPointerLeave={(event) => {
+						if (event.pointerType === 'mouse' || event.pointerType === 'pen') {
+							hideFacePhrase();
+						}
+					}}
+					type="button"
 				>
-					<div className="relative flex aspect-square h-24 origin-bottom items-center transition-transform group-hover:-translate-x-4 group-hover:-rotate-12">
+					<div
+						className={classNames(
+							'relative flex aspect-square h-24 origin-bottom items-center transition-transform',
+							{
+								'-translate-x-4 -rotate-12': isFaceActive,
+							},
+						)}
+					>
 						<Image
 							src="/face.png"
 							alt="A picture of me (Haydn Comley)!"
 							fill
-							className="group-hover:hidden group-active:block"
+							className={classNames({
+								hidden: isFaceActive,
+							})}
 						/>
 						<Image
 							src="/face-open.png"
-							alt="A picture of me (Haydn Comley)!"
+							alt=""
+							aria-hidden="true"
 							fill
-							className="hidden group-hover:block group-active:hidden"
+							priority
+							className={classNames({
+								hidden: !isFaceActive,
+							})}
 						/>
 
-						<div className="bg-primary text-primary-foreground absolute origin-bottom-left translate-x-24 -translate-y-4 scale-50 rotate-24 rounded-2xl rounded-bl-sm px-2 py-1 text-xs font-bold whitespace-nowrap opacity-0 transition-all group-hover:scale-110 group-hover:rotate-8 group-hover:opacity-100 group-active:rotate-24 group-active:opacity-0">
+						<div
+							className={classNames(
+								'bg-primary text-primary-foreground absolute origin-bottom-left translate-x-24 -translate-y-4 rounded-2xl rounded-bl-sm px-2 py-1 text-xs font-bold whitespace-nowrap transition-all',
+								{
+									'scale-110 rotate-8 opacity-100': isFaceActive,
+									'scale-50 rotate-24 opacity-0': !isFaceActive,
+								},
+							)}
+						>
 							{phrase}
 						</div>
 					</div>
-				</div>
+				</button>
 				<h1 className="text-2xl font-bold md:text-4xl">
 					<span className="font-normal opacity-50">https://</span>
 					<span
