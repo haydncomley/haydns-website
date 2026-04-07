@@ -8,6 +8,5 @@ type PageProps = {
 
 export default async function Page({ searchParams }: PageProps) {
 	const params = await searchParams;
-
 	return <HomePage initialActiveFilters={getSelectedFilters(params.filter)} />;
 }

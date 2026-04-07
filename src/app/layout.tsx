@@ -1,9 +1,11 @@
 import type { Metadata } from 'next';
 import { Rubik } from 'next/font/google';
+import { cookies } from 'next/headers';
 import './globals.css';
 import type { ReactNode } from 'react';
 
 import { PROJECTS } from '~/lib/projects';
+import { isThemePreference, THEME_COOKIE_NAME } from '~/lib/theme';
 
 import Providers from './providers';
 
@@ -14,18 +16,24 @@ const rubik = Rubik({
 });
 
 export const metadata: Metadata = {
-	title: 'haydns.website',
-	description:
-		'a collection of all of my side-projects, experiments and games!',
+	title: "Haydn's Website",
+	description: 'a collection of all of my projects, experiments and games!',
 };
 
 type RootLayoutProps = {
 	children: ReactNode;
 };
 
-export default function RootLayout({ children }: RootLayoutProps) {
+export default async function RootLayout({ children }: RootLayoutProps) {
+	const cookieStore = await cookies();
+	const themeCookie = cookieStore.get(THEME_COOKIE_NAME)?.value;
+	const themePreference = isThemePreference(themeCookie) ? themeCookie : null;
+
 	return (
-		<html lang="en">
+		<html
+			lang="en"
+			data-theme={themePreference ?? undefined}
+		>
 			<head>
 				<link
 					rel="icon"
@@ -61,7 +69,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
 				/>
 			</head>
 			<body className={`${rubik.variable} antialiased`}>
-				<Providers>{children}</Providers>
+				<Providers themePreference={themePreference}>{children}</Providers>
 			</body>
 		</html>
 	);

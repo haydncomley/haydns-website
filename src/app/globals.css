@@ -8,6 +8,14 @@
 	--primary-foreground: #ffffff;
 	--secondary: #268383;
 	--secondary-foreground: #ffffff;
+	color-scheme: light;
+}
+
+:root[data-theme='dark'] {
+	--background: #171418;
+	--foreground: #ededed;
+	--foreground-faded: #453d472e;
+	color-scheme: dark;
 }
 
 @theme inline {
@@ -21,7 +29,7 @@
 }
 
 @media (prefers-color-scheme: dark) {
-	:root {
+	:root:not([data-theme]) {
 		--background: #171418;
 		--foreground: #ededed;
 		--foreground-faded: #453d472e;

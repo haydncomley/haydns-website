@@ -2,9 +2,26 @@
 
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import type { ReactNode } from 'react';
-import { useState } from 'react';
+import { createContext, useContext, useState } from 'react';
 
-export default function Providers({ children }: { children: ReactNode }) {
+import type { ThemePreference } from '~/lib/theme';
+
+const ServerThemePreferenceContext = createContext<ThemePreference | null>(
+	null,
+);
+
+export const useServerThemePreference = () =>
+	useContext(ServerThemePreferenceContext);
+
+type ProvidersProps = {
+	children: ReactNode;
+	themePreference: ThemePreference | null;
+};
+
+export default function Providers({
+	children,
+	themePreference,
+}: ProvidersProps) {
 	const [queryClient] = useState(
 		() =>
 			new QueryClient({
@@ -17,6 +34,8 @@ export default function Providers({ children }: { children: ReactNode }) {
 	);
 
 	return (
-		<QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+		<ServerThemePreferenceContext.Provider value={themePreference}>
+			<QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+		</ServerThemePreferenceContext.Provider>
 	);
 }

@@ -124,7 +124,7 @@ export const HomePage = ({ initialActiveFilters }: HomePageProps) => {
 							href={project.path}
 							link={project.link}
 							title={project.name}
-							videoUrl={`/modules/${project.slug}.mp4`}
+							videoUrl={`/modules/${project.slug}.webm`}
 						/>
 					</ProjectRow>
 				);

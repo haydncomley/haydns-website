@@ -224,6 +224,8 @@ export const ProjectCard = ({
 							muted
 							loop
 							playsInline
+							// @ts-expect-error - `loading` is not yet recognized as a valid attribute on `video` elements in React, but it is supported in browsers and helps with performance.
+							loading="lazy"
 						/>
 					</div>
 				</div>
