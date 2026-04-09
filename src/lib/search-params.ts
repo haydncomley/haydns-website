@@ -1,4 +1,8 @@
-import { ALL_PROJECT_CATEGORIES, isProjectCategory } from './projects';
+import {
+	ALL_PROJECT_CATEGORIES,
+	isProjectCategory,
+	isProjectSlug,
+} from './projects';
 import type { ProjectCategory } from './types';
 
 export type PageSearchParams = Record<string, string | string[] | undefined>;
@@ -27,6 +31,18 @@ export const getSelectedFilters = (
 	return ALL_PROJECT_CATEGORIES.filter((category) =>
 		selectedFilters.includes(category),
 	);
+};
+
+export const getSelectedProjectSlug = (
+	projectValue: string | string[] | undefined,
+) => {
+	const normalizedProjectValue = getSearchParamValue(projectValue);
+
+	if (!normalizedProjectValue || !isProjectSlug(normalizedProjectValue)) {
+		return null;
+	}
+
+	return normalizedProjectValue;
 };
 
 const isTruthySearchParam = (value: string | string[] | undefined) => {

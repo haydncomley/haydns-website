@@ -5,24 +5,31 @@ import { startTransition, useEffect, useRef, useState } from 'react';
 
 import { Navbar } from '~/components/navbar';
 import { ProjectCard } from '~/components/project-card';
+import { ProjectPreview } from '~/components/project-preview';
 import { ProjectRow } from '~/components/project-row';
 import { ALL_PROJECT_CATEGORIES, PROJECTS } from '~/lib/projects';
-import { getSelectedFilters } from '~/lib/search-params';
-import type { ProjectCategory } from '~/lib/types';
+import type { Project, ProjectCategory } from '~/lib/types';
 
 const PARALLAX_SPEED = 0.5; // Background scrolls at this rate relative to content
 
 export type HomePageProps = {
 	initialActiveFilters: ProjectCategory[];
+	initialSelectedProjectSlug: Project['slug'] | null;
 };
 
-export const HomePage = ({ initialActiveFilters }: HomePageProps) => {
+export const HomePage = ({
+	initialActiveFilters,
+	initialSelectedProjectSlug,
+}: HomePageProps) => {
 	const mainRef = useRef<HTMLElement>(null);
 	const pathname = usePathname();
 	const router = useRouter();
 	const [activeFilters, setActiveFilters] =
 		useState<ProjectCategory[]>(initialActiveFilters);
 	const initialActiveFiltersKey = initialActiveFilters.join(',');
+	const selectedProject =
+		PROJECTS.find((project) => project.slug === initialSelectedProjectSlug) ??
+		null;
 	const visibleProjects = PROJECTS.filter((project) =>
 		project.categories.some((category) => activeFilters.includes(category)),
 	);
@@ -56,6 +63,27 @@ export const HomePage = ({ initialActiveFilters }: HomePageProps) => {
 		return () => window.removeEventListener('scroll', handleScroll);
 	}, []);
 
+	const updateUrl = (
+		mutateSearchParams: (searchParams: URLSearchParams) => void,
+		mode: 'push' | 'replace' = 'replace',
+	) => {
+		const nextSearchParams = new URLSearchParams(window.location.search);
+		mutateSearchParams(nextSearchParams);
+
+		const nextUrl = nextSearchParams.size
+			? `${pathname}?${nextSearchParams.toString()}`
+			: pathname;
+
+		startTransition(() => {
+			if (mode === 'push') {
+				router.push(nextUrl, { scroll: false });
+				return;
+			}
+
+			router.replace(nextUrl, { scroll: false });
+		});
+	};
+
 	const handleToggleFilter = (filter: ProjectCategory) => {
 		const nextFilters = activeFilters.includes(filter)
 			? activeFilters.filter((category) => category !== filter)
@@ -67,68 +95,84 @@ export const HomePage = ({ initialActiveFilters }: HomePageProps) => {
 			return;
 		}
 
-		const nextSearchParams = new URLSearchParams(window.location.search);
-
-		if (nextFilters.length === ALL_PROJECT_CATEGORIES.length) {
-			nextSearchParams.delete('filter');
-		} else {
-			nextSearchParams.set('filter', nextFilters.join(','));
-		}
-
-		const nextUrl = nextSearchParams.size
-			? `${pathname}?${nextSearchParams.toString()}`
-			: pathname;
-
 		setActiveFilters(nextFilters);
 
-		startTransition(() => {
-			router.replace(nextUrl, { scroll: false });
+		updateUrl((nextSearchParams) => {
+			if (nextFilters.length === ALL_PROJECT_CATEGORIES.length) {
+				nextSearchParams.delete('filter');
+				return;
+			}
+
+			nextSearchParams.set('filter', nextFilters.join(','));
+		});
+	};
+
+	const handleOpenProject = (projectSlug: Project['slug']) => {
+		updateUrl((nextSearchParams) => {
+			nextSearchParams.set('project', projectSlug);
+		}, 'push');
+	};
+
+	const handleCloseProject = () => {
+		updateUrl((nextSearchParams) => {
+			nextSearchParams.delete('project');
 		});
 	};
 
 	return (
-		<main
-			ref={mainRef}
-			className="flex min-h-full w-full flex-col items-center overflow-hidden pb-20"
-			style={{
-				backgroundColor: 'var(--background)',
-				backgroundImage:
-					'repeating-linear-gradient(180deg, var(--foreground-faded) 0 1px, transparent 1px 2.5rem)',
-				backgroundSize: '100% 2.5rem',
-				willChange: 'background-position',
-			}}
-		>
-			<Navbar
-				activeFilters={activeFilters}
-				onToggleFilter={handleToggleFilter}
-			/>
+		<>
+			<main
+				ref={mainRef}
+				className="flex min-h-full w-full flex-col items-center overflow-hidden pb-20"
+				style={{
+					backgroundColor: 'var(--background)',
+					backgroundImage:
+						'repeating-linear-gradient(180deg, var(--foreground-faded) 0 1px, transparent 1px 2.5rem)',
+					backgroundSize: '100% 2.5rem',
+					willChange: 'background-position',
+				}}
+			>
+				<Navbar
+					activeFilters={activeFilters}
+					onToggleFilter={handleToggleFilter}
+				/>
 
-			{PROJECTS.map((project, index) => {
-				const visibleIndex = visibleProjectIndexes.get(project.slug);
-				const isVisible = visibleIndex !== undefined;
-				const displayIndex = visibleIndex ?? 0;
-				const align = (visibleIndex ?? index) % 2 === 0 ? 'start' : 'end';
+				{PROJECTS.map((project, index) => {
+					const visibleIndex = visibleProjectIndexes.get(project.slug);
+					const isVisible = visibleIndex !== undefined;
+					const displayIndex = visibleIndex ?? 0;
+					const align = (visibleIndex ?? index) % 2 === 0 ? 'start' : 'end';
 
-				return (
-					<ProjectRow
-						key={project.slug}
-						align={align}
-						displayIndex={displayIndex}
-						isFirst={visibleIndex === 0}
-						isVisible={isVisible}
-					>
-						<ProjectCard
+					return (
+						<ProjectRow
+							key={project.slug}
 							align={align}
-							colors={project.colors}
-							description={project.description}
-							href={project.path}
-							link={project.link}
-							title={project.name}
-							videoUrl={`/modules/${project.slug}.webm`}
-						/>
-					</ProjectRow>
-				);
-			})}
-		</main>
+							displayIndex={displayIndex}
+							isFirst={visibleIndex === 0}
+							isVisible={isVisible}
+						>
+							<ProjectCard
+								align={align}
+								description={project.description}
+								href={project.path}
+								onOpen={() => handleOpenProject(project.slug)}
+								prettyPath={project.prettyPath}
+								primaryColor={project.primaryColor}
+								secondaryColor={project.secondaryColor}
+								title={project.name}
+								videoUrl={project.previewVideoSrc}
+							/>
+						</ProjectRow>
+					);
+				})}
+			</main>
+
+			{selectedProject ? (
+				<ProjectPreview
+					project={selectedProject}
+					onClose={handleCloseProject}
+				/>
+			) : null}
+		</>
 	);
 };

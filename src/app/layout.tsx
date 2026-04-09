@@ -65,7 +65,7 @@ export default async function RootLayout({ children }: RootLayoutProps) {
 				/>
 				<meta
 					name="theme-color"
-					content={PROJECTS[0].colors[0]}
+					content={PROJECTS[0].primaryColor}
 				/>
 			</head>
 			<body className={`${rubik.variable} antialiased`}>

@@ -1,4 +1,8 @@
-import { getSelectedFilters, type PageSearchParams } from '~/lib/search-params';
+import {
+	getSelectedFilters,
+	getSelectedProjectSlug,
+	type PageSearchParams,
+} from '~/lib/search-params';
 
 import { HomePage } from './home-page';
 
@@ -8,5 +12,10 @@ type PageProps = {
 
 export default async function Page({ searchParams }: PageProps) {
 	const params = await searchParams;
-	return <HomePage initialActiveFilters={getSelectedFilters(params.filter)} />;
+	return (
+		<HomePage
+			initialActiveFilters={getSelectedFilters(params.filter)}
+			initialSelectedProjectSlug={getSelectedProjectSlug(params.project)}
+		/>
+	);
 }

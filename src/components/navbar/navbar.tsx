@@ -4,6 +4,7 @@ import classNames from 'classnames';
 import { Eye, EyeClosed, Moon, Sun } from 'lucide-react';
 import Image from 'next/image';
 import {
+	type CSSProperties,
 	Fragment,
 	useEffect,
 	useRef,
@@ -25,8 +26,40 @@ import styles from './navbar.module.css';
 import { Socials } from '../socials';
 
 const DOMAIN = 'haydns.website';
-const PHRASES = ['Hello, world!', '*yappa-yappa*'];
-const FACE_PHRASE_VISIBLE_MS = 2200;
+const DOMAIN_PREFIX = 'https://';
+const PHRASES = [
+	'Hey there!',
+	'*yappa-yappa*',
+	'Hello, world.',
+	'你好',
+	'Welcome to my website',
+];
+const FACE_PHRASE_INITIAL_DELAY_MS = 2500;
+const FACE_PHRASE_VISIBLE_MS = 1000;
+const FACE_PHRASE_INITIAL_VISIBLE_MS = 1000;
+const NAVBAR_INTRO_START_DELAY_MS = 80;
+const NAVBAR_CONTENT_INTRO_DURATION_MS = 420;
+const NAVBAR_PREFIX_CHARACTER_DELAY_MS = 20;
+const NAVBAR_DOMAIN_CHARACTER_DELAY_MS = 20;
+const NAVBAR_PREFIX_START_DELAY_MS = 120;
+const NAVBAR_PREFIX_TO_DOMAIN_GAP_MS = 90;
+const NAVBAR_DOMAIN_START_DELAY_MS =
+	NAVBAR_PREFIX_START_DELAY_MS +
+	(DOMAIN_PREFIX.length - 1) * NAVBAR_PREFIX_CHARACTER_DELAY_MS +
+	NAVBAR_PREFIX_TO_DOMAIN_GAP_MS;
+const NAVBAR_TRAILING_SLASH_DELAY_MS =
+	NAVBAR_DOMAIN_START_DELAY_MS +
+	DOMAIN.length * NAVBAR_DOMAIN_CHARACTER_DELAY_MS;
+const NAVBAR_DESCRIPTION_DELAY_MS = NAVBAR_TRAILING_SLASH_DELAY_MS + 160;
+const NAVBAR_PROJECT_COUNT_DELAY_MS = NAVBAR_DESCRIPTION_DELAY_MS + 100;
+const NAVBAR_SOCIALS_DELAY_MS = NAVBAR_PROJECT_COUNT_DELAY_MS + 120;
+const NAVBAR_INTRO_TOTAL_DURATION_MS =
+	NAVBAR_SOCIALS_DELAY_MS + NAVBAR_CONTENT_INTRO_DURATION_MS;
+
+const getIntroDelayStyle = (delayMs: number): CSSProperties =>
+	({
+		'--intro-delay': `${delayMs}ms`,
+	}) as CSSProperties;
 
 type NavbarProps = {
 	activeFilters: ProjectCategory[];
@@ -34,7 +67,7 @@ type NavbarProps = {
 };
 
 const getRandomProjectColour = () =>
-	PROJECTS[Math.floor(Math.random() * PROJECTS.length)].colors[0];
+	PROJECTS[Math.floor(Math.random() * PROJECTS.length)].primaryColor;
 
 const getThemePreferenceMediaQuery = () =>
 	window.matchMedia('(prefers-color-scheme: dark)');
@@ -120,10 +153,14 @@ const triggerCharacterAnimation = (element: HTMLSpanElement) => {
 
 export const Navbar = ({ activeFilters, onToggleFilter }: NavbarProps) => {
 	const themePreference = useThemePreference();
-	const facePhraseTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(
-		null,
-	);
+	const facePhraseIntroTimeoutRef = useRef<number | null>(null);
+	const facePhraseTimeoutRef = useRef<number | null>(null);
+	const navbarIntroFrameRef = useRef<number | null>(null);
+	const navbarIntroTimeoutRef = useRef<number | null>(null);
+	const navbarIntroCompleteTimeoutRef = useRef<number | null>(null);
 	const [isFaceActive, setIsFaceActive] = useState(false);
+	const [isNavbarIntroActive, setIsNavbarIntroActive] = useState(false);
+	const [isNavbarIntroVisible, setIsNavbarIntroVisible] = useState(false);
 	const [phraseIndex, setPhraseIndex] = useState(0);
 	const phrase = PHRASES[phraseIndex];
 	const projectsVisible = PROJECTS.filter((filter) =>
@@ -133,12 +170,87 @@ export const Navbar = ({ activeFilters, onToggleFilter }: NavbarProps) => {
 
 	useEffect(
 		() => () => {
+			if (navbarIntroFrameRef.current) {
+				cancelAnimationFrame(navbarIntroFrameRef.current);
+			}
+
+			if (navbarIntroTimeoutRef.current) {
+				clearTimeout(navbarIntroTimeoutRef.current);
+			}
+
+			if (navbarIntroCompleteTimeoutRef.current) {
+				clearTimeout(navbarIntroCompleteTimeoutRef.current);
+			}
+
+			if (facePhraseIntroTimeoutRef.current) {
+				clearTimeout(facePhraseIntroTimeoutRef.current);
+			}
+
 			if (facePhraseTimeoutRef.current) {
 				clearTimeout(facePhraseTimeoutRef.current);
 			}
 		},
 		[],
 	);
+
+	useEffect(() => {
+		navbarIntroFrameRef.current = window.requestAnimationFrame(() => {
+			navbarIntroTimeoutRef.current = window.setTimeout(() => {
+				setIsNavbarIntroVisible(true);
+				setIsNavbarIntroActive(true);
+				navbarIntroTimeoutRef.current = null;
+
+				navbarIntroCompleteTimeoutRef.current = window.setTimeout(() => {
+					setIsNavbarIntroActive(false);
+					navbarIntroCompleteTimeoutRef.current = null;
+				}, NAVBAR_INTRO_TOTAL_DURATION_MS);
+			}, NAVBAR_INTRO_START_DELAY_MS);
+		});
+
+		return () => {
+			if (!navbarIntroFrameRef.current) {
+				return;
+			}
+
+			cancelAnimationFrame(navbarIntroFrameRef.current);
+			navbarIntroFrameRef.current = null;
+
+			if (navbarIntroTimeoutRef.current) {
+				clearTimeout(navbarIntroTimeoutRef.current);
+				navbarIntroTimeoutRef.current = null;
+			}
+
+			if (navbarIntroCompleteTimeoutRef.current) {
+				clearTimeout(navbarIntroCompleteTimeoutRef.current);
+				navbarIntroCompleteTimeoutRef.current = null;
+			}
+		};
+	}, []);
+
+	useEffect(() => {
+		facePhraseIntroTimeoutRef.current = window.setTimeout(() => {
+			showFacePhrase(true, FACE_PHRASE_INITIAL_VISIBLE_MS);
+			facePhraseIntroTimeoutRef.current = null;
+		}, FACE_PHRASE_INITIAL_DELAY_MS);
+
+		return () => {
+			if (!facePhraseIntroTimeoutRef.current) {
+				return;
+			}
+
+			clearTimeout(facePhraseIntroTimeoutRef.current);
+			facePhraseIntroTimeoutRef.current = null;
+		};
+	}, []);
+
+	const clearFacePhraseIntroTimeout = () => {
+		if (!facePhraseIntroTimeoutRef.current) {
+			return;
+		}
+
+		clearTimeout(facePhraseIntroTimeoutRef.current);
+		facePhraseIntroTimeoutRef.current = null;
+	};
 
 	const clearFacePhraseTimeout = () => {
 		if (!facePhraseTimeoutRef.current) {
@@ -149,7 +261,11 @@ export const Navbar = ({ activeFilters, onToggleFilter }: NavbarProps) => {
 		facePhraseTimeoutRef.current = null;
 	};
 
-	const showFacePhrase = (autoHide = false) => {
+	const showFacePhrase = (
+		autoHide = false,
+		autoHideDelayMs = FACE_PHRASE_VISIBLE_MS,
+	) => {
+		clearFacePhraseIntroTimeout();
 		clearFacePhraseTimeout();
 		setIsFaceActive(true);
 
@@ -157,13 +273,14 @@ export const Navbar = ({ activeFilters, onToggleFilter }: NavbarProps) => {
 			return;
 		}
 
-		facePhraseTimeoutRef.current = setTimeout(() => {
+		facePhraseTimeoutRef.current = window.setTimeout(() => {
 			setIsFaceActive(false);
 			facePhraseTimeoutRef.current = null;
-		}, FACE_PHRASE_VISIBLE_MS);
+		}, autoHideDelayMs);
 	};
 
 	const hideFacePhrase = () => {
+		clearFacePhraseIntroTimeout();
 		clearFacePhraseTimeout();
 		setIsFaceActive(false);
 	};
@@ -195,8 +312,14 @@ export const Navbar = ({ activeFilters, onToggleFilter }: NavbarProps) => {
 		<div className="flex flex-col items-center gap-2 px-8 py-16">
 			<div className="flex flex-col items-center gap-1">
 				<button
-					aria-label="Show a phrase from Haydn"
-					className="flex cursor-pointer items-center transition-transform active:scale-90"
+					className={classNames(
+						'group flex cursor-pointer items-center transition-transform active:scale-90',
+						styles.faceIntro,
+						{
+							[styles.introActive]: isNavbarIntroActive,
+							[styles.introVisible]: isNavbarIntroVisible,
+						},
+					)}
 					onBlur={hideFacePhrase}
 					onClick={handleFaceClick}
 					onFocus={() => showFacePhrase()}
@@ -224,7 +347,7 @@ export const Navbar = ({ activeFilters, onToggleFilter }: NavbarProps) => {
 							src="/face.png"
 							alt="A picture of me (Haydn Comley)!"
 							fill
-							className={classNames({
+							className={classNames('group-active:block!', {
 								hidden: isFaceActive,
 							})}
 						/>
@@ -234,7 +357,7 @@ export const Navbar = ({ activeFilters, onToggleFilter }: NavbarProps) => {
 							aria-hidden="true"
 							fill
 							priority
-							className={classNames({
+							className={classNames('group-active:hidden', {
 								hidden: !isFaceActive,
 							})}
 						/>
@@ -253,16 +376,55 @@ export const Navbar = ({ activeFilters, onToggleFilter }: NavbarProps) => {
 					</div>
 				</button>
 				<h1 className="text-2xl font-bold md:text-4xl">
-					<span className="font-normal opacity-50">https://</span>
+					<span
+						aria-hidden="true"
+						className={classNames(styles.domain, styles.domainIntro, {
+							[styles.introActive]: isNavbarIntroActive,
+							[styles.introVisible]: isNavbarIntroVisible,
+						})}
+					>
+						{DOMAIN_PREFIX.split('').map((character, index) => (
+							<span
+								key={`prefix-${character}-${index}`}
+								aria-hidden="true"
+								className={classNames(styles.character, styles.characterIntro, {
+									'font-normal': true,
+									[styles.introActive]: isNavbarIntroActive,
+									[styles.introVisible]: isNavbarIntroVisible,
+									[styles.characterMuted]: true,
+									[styles.characterTiltLeft]: index % 2 === 0,
+									[styles.characterTiltRight]: index % 2 !== 0,
+								})}
+								style={getIntroDelayStyle(
+									NAVBAR_PREFIX_START_DELAY_MS +
+										index * NAVBAR_PREFIX_CHARACTER_DELAY_MS,
+								)}
+							>
+								{character}
+							</span>
+						))}
+					</span>
 					<span
 						aria-label={DOMAIN}
-						className={styles.domain}
+						className={classNames(styles.domain, styles.domainIntro, {
+							[styles.introActive]: isNavbarIntroActive,
+							[styles.introVisible]: isNavbarIntroVisible,
+						})}
 					>
 						{DOMAIN.split('').map((character, index) => (
 							<span
 								key={`${character}-${index}`}
 								aria-hidden="true"
-								className={`${styles.character} ${index % 2 === 0 ? styles.characterTiltLeft : styles.characterTiltRight}`}
+								className={classNames(styles.character, styles.characterIntro, {
+									[styles.introActive]: isNavbarIntroActive,
+									[styles.introVisible]: isNavbarIntroVisible,
+									[styles.characterTiltLeft]: index % 2 === 0,
+									[styles.characterTiltRight]: index % 2 !== 0,
+								})}
+								style={getIntroDelayStyle(
+									NAVBAR_DOMAIN_START_DELAY_MS +
+										index * NAVBAR_DOMAIN_CHARACTER_DELAY_MS,
+								)}
 								onMouseEnter={(event) => {
 									event.currentTarget.style.setProperty(
 										'--blink-colour',
@@ -278,9 +440,44 @@ export const Navbar = ({ activeFilters, onToggleFilter }: NavbarProps) => {
 							</span>
 						))}
 					</span>
-					<span className="font-normal opacity-50">/</span>
+					<span
+						aria-hidden="true"
+						className={classNames(styles.domain, styles.domainIntro, {
+							[styles.introActive]: isNavbarIntroActive,
+							[styles.introVisible]: isNavbarIntroVisible,
+						})}
+					>
+						<span
+							aria-hidden="true"
+							className={classNames(
+								styles.character,
+								styles.characterIntro,
+								'font-normal',
+								{
+									[styles.introActive]: isNavbarIntroActive,
+									[styles.introVisible]: isNavbarIntroVisible,
+									[styles.characterMuted]: true,
+									[styles.characterTiltLeft]: DOMAIN.length % 2 === 0,
+									[styles.characterTiltRight]: DOMAIN.length % 2 !== 0,
+								},
+							)}
+							style={getIntroDelayStyle(NAVBAR_TRAILING_SLASH_DELAY_MS)}
+						>
+							/
+						</span>
+					</span>
 				</h1>
-				<div className="inline-flex flex-wrap items-center justify-center gap-2 lg:mt-4">
+				<div
+					className={classNames(
+						'inline-flex flex-wrap items-center justify-center gap-2 lg:mt-4',
+						styles.descriptionIntro,
+						{
+							[styles.introActive]: isNavbarIntroActive,
+							[styles.introVisible]: isNavbarIntroVisible,
+						},
+					)}
+					style={getIntroDelayStyle(NAVBAR_DESCRIPTION_DELAY_MS)}
+				>
 					<span>a collection of</span>
 					<div
 						aria-label="Project filters"
@@ -298,8 +495,9 @@ export const Navbar = ({ activeFilters, onToggleFilter }: NavbarProps) => {
 									<button
 										aria-pressed={isActive}
 										className={classNames(
-											'border-foreground/25 flex cursor-pointer items-center gap-2 rounded-full border px-2 pr-2 transition-colors',
+											'border-foreground/25 flex cursor-pointer items-center gap-2 rounded-full border px-2 pr-2 transition-all hover:scale-108 odd:hover:-rotate-3 even:hover:rotate-3 active:scale-95',
 											{
+												'bg-background': !isActive,
 												'bg-foreground text-background': isActive,
 											},
 										)}
@@ -318,22 +516,36 @@ export const Navbar = ({ activeFilters, onToggleFilter }: NavbarProps) => {
 						})}
 					</div>
 				</div>
-				<div className="mt-4 text-xs opacity-50">
+				<div
+					className={classNames(
+						'mt-4 text-xs opacity-50',
+						styles.projectCountIntro,
+						{
+							[styles.introActive]: isNavbarIntroActive,
+							[styles.introVisible]: isNavbarIntroVisible,
+						},
+					)}
+					style={getIntroDelayStyle(NAVBAR_PROJECT_COUNT_DELAY_MS)}
+				>
 					Showing {projectsVisible} projects
 				</div>
 			</div>
 
-			<Socials />
+			<div
+				className={classNames(styles.socialsIntro, {
+					[styles.introActive]: isNavbarIntroActive,
+					[styles.introVisible]: isNavbarIntroVisible,
+				})}
+				style={getIntroDelayStyle(NAVBAR_SOCIALS_DELAY_MS)}
+			>
+				<Socials />
+			</div>
 
 			<button
 				aria-label={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
 				aria-pressed={isDarkMode}
 				className={classNames(
-					'border-foreground/25 fixed top-8 right-8 z-50 flex cursor-pointer items-center gap-2 rounded-full border p-2 text-sm transition-all hover:scale-110 hover:rotate-12 active:scale-95',
-					{
-						'bg-foreground text-background': isDarkMode,
-						'bg-background text-foreground': !isDarkMode,
-					},
+					'bg-background text-foreground dark:bg-foreground dark:text-background border-foreground/25 fixed top-8 right-8 z-50 flex cursor-pointer items-center gap-2 rounded-full border p-2 text-sm transition-all hover:scale-110 hover:rotate-12 active:scale-95',
 				)}
 				onClick={handleToggleThemePreference}
 				type="button"

@@ -2,29 +2,34 @@
 
 import classNames from 'classnames';
 import { ArrowRight, ExternalLink } from 'lucide-react';
-import Link from 'next/link';
 import React, { useEffect, useRef, useState } from 'react';
 
 export type ProjectCardProps = {
 	title: string;
-	link: string[];
+	prettyPath: string[];
 	href: string;
 	description: React.ReactNode | React.ReactNode[];
 	videoUrl: string;
-	colors: [foreground: string, background: string];
+	primaryColor: string;
+	secondaryColor: string;
+	onOpen: () => void;
 	align?: 'start' | 'end';
 };
 
 export const ProjectCard = ({
 	title,
-	link,
+	prettyPath,
 	href,
 	description,
 	videoUrl,
-	colors: [foreground, background],
+	primaryColor,
+	secondaryColor,
+	onOpen,
 	align = 'start',
 }: ProjectCardProps) => {
-	const cardRef = useRef<HTMLAnchorElement>(null);
+	const foreground = primaryColor;
+	const background = secondaryColor;
+	const cardRef = useRef<HTMLButtonElement>(null);
 	const tiltRef = useRef<HTMLDivElement>(null);
 	const [isInViewOnMobile, setIsInViewOnMobile] = useState(false);
 	const [isDesktopPointer, setIsDesktopPointer] = useState(false);
@@ -101,7 +106,7 @@ export const ProjectCard = ({
 		};
 	}, []);
 
-	const handleMouseMove = (event: React.MouseEvent<HTMLAnchorElement>) => {
+	const handleMouseMove = (event: React.MouseEvent<HTMLButtonElement>) => {
 		if (!isDesktopPointer || !tiltRef.current) {
 			return;
 		}
@@ -169,15 +174,16 @@ export const ProjectCard = ({
 	} as React.CSSProperties;
 
 	return (
-		<Link
+		<button
 			ref={cardRef}
-			href={href}
-			target="_blank"
+			type="button"
+			onClick={onOpen}
 			onMouseEnter={handleMouseEnter}
 			onMouseMove={handleMouseMove}
 			onMouseLeave={handleMouseLeave}
+			aria-label={`Open preview for ${title}`}
 			className={classNames(
-				`group flex w-full flex-col gap-0 transition-all hover:z-10 hover:-translate-y-20 md:w-xs lg:w-md ${cardRotate} pointer-events-auto`,
+				`group flex w-full cursor-pointer flex-col gap-0 border-0 bg-transparent p-0 text-left transition-all hover:z-10 hover:-translate-y-20 md:w-xs lg:w-md ${cardRotate} pointer-events-auto`,
 				{
 					'z-10 scale-100': isActive,
 				},
@@ -253,7 +259,7 @@ export const ProjectCard = ({
 						<div className="flex flex-col gap-0.5">
 							<h4 className="leading-none font-bold">{title}</h4>
 							<p className="max-w-[12.5rem] overflow-hidden text-sm leading-none font-normal overflow-ellipsis whitespace-nowrap">
-								{link.map((part, i) => (
+								{prettyPath.map((part, i) => (
 									<span
 										className="first:opacity-75"
 										key={i}
@@ -272,11 +278,12 @@ export const ProjectCard = ({
 								},
 							)}
 						>
-							{href.startsWith('http') ? (
+							<ArrowRight className="h-4 w-4" />
+							{/* {href.startsWith('http') ? (
 								<ExternalLink className="h-4 w-4" />
 							) : (
 								<ArrowRight className="h-4 w-4" />
-							)}
+							)} */}
 						</span>
 					</div>
 				</div>
@@ -308,6 +315,6 @@ export const ProjectCard = ({
 					</div>
 				</div>
 			</div>
-		</Link>
+		</button>
 	);
 };
