@@ -38,7 +38,7 @@ export const PROJECTS = [
 	physicsTypeProject,
 	chatgptCloneProject,
 	vinylViewerProject,
-	portfolioWebsiteProject,
+	// portfolioWebsiteProject,
 ] as const;
 
 export type ProjectSlug = (typeof PROJECTS)[number]['slug'];
