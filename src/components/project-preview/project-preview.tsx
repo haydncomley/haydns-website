@@ -223,7 +223,7 @@ export const ProjectPreview = ({ project, onClose }: ProjectPreviewProps) => {
 			<div className="relative h-full w-full">
 				<div className="m-auto flex h-full w-full max-w-6xl flex-col items-center justify-center gap-6 md:px-0 md:py-12">
 					<div className="flex w-full flex-col items-center gap-6">
-						<div className="relative aspect-square w-full overflow-hidden select-none md:aspect-3/2">
+						<div className="relative aspect-square max-h-[70vh] w-full overflow-hidden select-none max-md:-translate-y-12 md:aspect-3/2 md:max-h-[50vh]">
 							{previewMedia.map((mediaItem, index) => {
 								const relativePosition = getRelativeCarouselPosition(
 									index,
@@ -251,7 +251,7 @@ export const ProjectPreview = ({ project, onClose }: ProjectPreviewProps) => {
 									<div
 										key={`${mediaItem.type}-${mediaItem.src}-${index}`}
 										className={classNames(
-											'absolute top-1/2 left-1/2 flex aspect-square max-h-full items-center justify-center transition-[transform,opacity,width,filter] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] md:aspect-3/2',
+											'absolute top-1/2 left-1/2 flex aspect-square max-h-full items-center justify-center transition-[transform,opacity,width,filter] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] md:aspect-3/2 md:max-h-[50vh]',
 											{
 												'pointer-events-none': !isActive,
 												invisible: !isPanelVisible,
@@ -299,49 +299,7 @@ export const ProjectPreview = ({ project, onClose }: ProjectPreviewProps) => {
 							) : null}
 						</div>
 
-						<Link
-							className={classNames(
-								'relative z-10 transition-transform duration-200 ease-out max-md:fixed max-md:bottom-4 md:-mt-8',
-							)}
-							target="_blank"
-							href={project.path}
-							style={
-								{
-									'--background': project.secondaryColor,
-									'--foreground': project.primaryColor,
-								} as React.CSSProperties
-							}
-						>
-							<div
-								className={classNames(
-									'flex -translate-y-4 items-center gap-8 rounded-4xl bg-(--background) px-6 py-4 pr-4 text-(--foreground) shadow-md transition-all group-hover:scale-105 group-hover:shadow-xl md:translate-x-2',
-								)}
-							>
-								<div className="flex flex-col gap-0.5">
-									<h4 className="leading-none font-bold">{project.name}</h4>
-									<p className="max-w-[12.5rem] overflow-hidden text-sm leading-none font-normal overflow-ellipsis whitespace-nowrap">
-										{project.prettyPath.map((part, i) => (
-											<span
-												className="first:opacity-75"
-												key={i}
-											>
-												{part}
-											</span>
-										))}
-									</p>
-								</div>
-
-								<span
-									className={classNames(
-										'rounded-full bg-(--foreground) p-3 text-(--background) transition-all group-hover:scale-110',
-									)}
-								>
-									<ExternalLink className="h-4 w-4" />
-								</span>
-							</div>
-						</Link>
-
-						<div className="flex w-full max-w-3xl items-center justify-center gap-3 overflow-x-auto px-2 py-1 md:px-0">
+						<div className="flex w-full max-w-3xl items-center justify-center gap-3 overflow-x-auto px-2 py-1 max-md:-translate-y-12 md:px-0">
 							{previewMedia.map((mediaItem, index) => {
 								const isActive = index === activeIndex;
 								const mediaLabel = getMediaItemLabel(
@@ -378,6 +336,48 @@ export const ProjectPreview = ({ project, onClose }: ProjectPreviewProps) => {
 								);
 							})}
 						</div>
+
+						<Link
+							className={classNames(
+								'relative z-10 transition-transform duration-200 ease-out max-md:fixed max-md:bottom-4',
+							)}
+							target="_blank"
+							href={project.path}
+							style={
+								{
+									'--background': project.secondaryColor,
+									'--foreground': project.primaryColor,
+								} as React.CSSProperties
+							}
+						>
+							<div
+								className={classNames(
+									'flex items-center gap-8 rounded-4xl bg-(--background) px-6 py-4 pr-4 text-(--foreground) shadow-md transition-all group-hover:scale-105 group-hover:shadow-xl md:mt-8 md:translate-x-2',
+								)}
+							>
+								<div className="flex flex-col gap-0.5">
+									<h4 className="leading-none font-bold">{project.name}</h4>
+									<p className="max-w-[12.5rem] overflow-hidden text-sm leading-none font-normal overflow-ellipsis whitespace-nowrap">
+										{project.prettyPath.map((part, i) => (
+											<span
+												className="first:opacity-75"
+												key={i}
+											>
+												{part}
+											</span>
+										))}
+									</p>
+								</div>
+
+								<span
+									className={classNames(
+										'rounded-full bg-(--foreground) p-3 text-(--background) transition-all group-hover:scale-110',
+									)}
+								>
+									<ExternalLink className="h-4 w-4" />
+								</span>
+							</div>
+						</Link>
 					</div>
 				</div>
 			</div>

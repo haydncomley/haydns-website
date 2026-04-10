@@ -315,10 +315,7 @@ export const Navbar = ({ activeFilters, onToggleFilter }: NavbarProps) => {
 					className={classNames(
 						'group flex cursor-pointer items-center transition-transform active:scale-90',
 						styles.faceIntro,
-						{
-							[styles.introActive]: isNavbarIntroActive,
-							[styles.introVisible]: isNavbarIntroVisible,
-						},
+						styles.introActive,
 					)}
 					onBlur={hideFacePhrase}
 					onClick={handleFaceClick}
