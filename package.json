@@ -6,7 +6,8 @@
 		"dev": "next dev --turbopack",
 		"build": "next build",
 		"start": "next start",
-		"lint": "next lint"
+		"lint": "next lint",
+		"optimise:videos": "bun run scripts/optimise-videos.ts"
 	},
 	"dependencies": {
 		"@spotify/web-api-ts-sdk": "^1.2.0",

@@ -23,7 +23,7 @@ export const gamingDashboardProject = createProject({
 		},
 		{
 			type: 'video',
-			src: '/modules/gaming-dashboard/create-ticket.mov',
+			src: '/modules/gaming-dashboard/create-ticket.webm',
 			title: 'Video showing admin area',
 		},
 		{

@@ -8,6 +8,7 @@ import { numberChainProject } from './number-chain';
 import { physicsTypeProject } from './physics-type';
 import { portfolioWebsiteProject } from './portfolio-website';
 import { samPlantProject } from './sam-plant';
+import { tubeGameProject } from './tube-game';
 import { vinylViewerProject } from './vinyl-viewer';
 
 export const ALL_PROJECT_CATEGORIES: ProjectCategory[] = [
@@ -29,10 +30,11 @@ export const isProjectCategory = (value: string): value is ProjectCategory =>
 	ALL_PROJECT_CATEGORIES.includes(value as ProjectCategory);
 
 export const PROJECTS = [
-	gamingDashboardProject,
 	aiStreamAssistantProject,
-	dailyWordGameProject,
+	gamingDashboardProject,
+	tubeGameProject,
 	samPlantProject,
+	dailyWordGameProject,
 	marketingPortfolioProject,
 	numberChainProject,
 	physicsTypeProject,

@@ -24,7 +24,7 @@ export const dailyWordGameProject = createProject({
 		},
 		{
 			type: 'video',
-			src: '/modules/daily-word-game/mobile.mov',
+			src: '/modules/daily-word-game/mobile.webm',
 			title: 'Gameplay preview',
 			caption: 'Preview reel',
 		},

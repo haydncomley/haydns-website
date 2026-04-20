@@ -1,13 +1,7 @@
 'use client';
 
 import classNames from 'classnames';
-import {
-	ArrowRight,
-	ChevronLeft,
-	ChevronRight,
-	ExternalLink,
-	X,
-} from 'lucide-react';
+import { ExternalLink, X } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import type React from 'react';
@@ -19,31 +13,6 @@ import type { Project, ProjectGalleryItem } from '~/lib/types';
 export type ProjectPreviewProps = {
 	project: Project;
 	onClose: () => void;
-};
-
-const getWrappedIndex = (index: number, count: number) => {
-	if (count === 0) {
-		return 0;
-	}
-
-	return ((index % count) + count) % count;
-};
-
-const getRelativeCarouselPosition = (
-	index: number,
-	activeIndex: number,
-	count: number,
-) => {
-	if (count <= 1) {
-		return 0;
-	}
-
-	const forwardDistance = getWrappedIndex(index - activeIndex, count);
-	const backwardDistance = forwardDistance - count;
-
-	return Math.abs(backwardDistance) < Math.abs(forwardDistance)
-		? backwardDistance
-		: forwardDistance;
 };
 
 const getMediaItemLabel = (
@@ -62,55 +31,86 @@ const getMediaItemLabel = (
 	);
 };
 
-const renderMediaItem = ({
-	mediaItem,
-	label,
-	isActive,
-	isThumbnail = false,
-}: {
+type MediaProps = {
 	mediaItem: ProjectGalleryItem;
 	label: string;
-	isActive: boolean;
-	isThumbnail?: boolean;
-}) => {
+	isEnlarged?: boolean;
+};
+
+const GalleryMedia = ({ mediaItem, label, isEnlarged = false }: MediaProps) => {
+	const [ratio, setRatio] = useState<number>(16 / 9);
+
+	const containerStyle: React.CSSProperties = isEnlarged
+		? {
+				aspectRatio: ratio,
+				width: `min(calc(100vw - 2rem), calc((100vh - 2rem) * ${ratio}))`,
+			}
+		: {
+				aspectRatio: ratio,
+				width: `min(100%, calc(70vh * ${ratio}))`,
+			};
+
+	const containerClassName = classNames(
+		'relative mx-auto overflow-hidden',
+		isEnlarged
+			? 'max-h-[calc(100vh-2rem)]'
+			: 'bg-foreground/5 max-h-[70vh] rounded-3xl shadow-md ring-1 ring-foreground/10 transition-all duration-300 ease-out group-hover:scale-[1.01] group-hover:shadow-xl group-active:scale-[0.99]',
+	);
+
 	if (mediaItem.type === 'image') {
 		return (
-			<Image
-				src={mediaItem.src}
-				alt={label}
-				fill
-				className={classNames({
-					'max-h-full max-w-full object-contain': !isThumbnail,
-					'h-full w-full object-cover': isThumbnail,
-				})}
-				draggable={false}
-			/>
+			<div
+				className={containerClassName}
+				style={containerStyle}
+			>
+				<Image
+					src={mediaItem.src}
+					alt={label}
+					fill
+					sizes={isEnlarged ? '100vw' : '(max-width: 768px) 100vw, 720px'}
+					className="object-contain"
+					draggable={false}
+					onLoad={(event) => {
+						const img = event.currentTarget;
+						if (img.naturalWidth && img.naturalHeight) {
+							setRatio(img.naturalWidth / img.naturalHeight);
+						}
+					}}
+				/>
+			</div>
 		);
 	}
 
 	return (
-		<video
-			src={mediaItem.src}
-			poster={mediaItem.poster}
-			className={classNames({
-				'bg-background/80 max-h-full max-w-full rounded-4xl object-contain':
-					!isThumbnail,
-				'h-full w-full object-cover': isThumbnail,
-			})}
-			muted={isThumbnail}
-			playsInline
-			controls={isActive && !isThumbnail}
-			preload="metadata"
-			tabIndex={isActive && !isThumbnail ? 0 : -1}
-		/>
+		<div
+			className={containerClassName}
+			style={containerStyle}
+		>
+			<video
+				src={mediaItem.src}
+				poster={mediaItem.poster}
+				className="absolute inset-0 h-full w-full object-contain"
+				muted={!isEnlarged}
+				autoPlay={!isEnlarged}
+				loop={!isEnlarged}
+				playsInline
+				controls={isEnlarged}
+				preload="metadata"
+				onLoadedMetadata={(event) => {
+					const video = event.currentTarget;
+					if (video.videoWidth && video.videoHeight) {
+						setRatio(video.videoWidth / video.videoHeight);
+					}
+				}}
+			/>
+		</div>
 	);
 };
 
 export const ProjectPreview = ({ project, onClose }: ProjectPreviewProps) => {
 	const closeButtonRef = useRef<HTMLButtonElement>(null);
-	const wheelLockTimeoutRef = useRef<number | null>(null);
 	const [isVisible, setIsVisible] = useState(false);
-	const [activeIndex, setActiveIndex] = useState(0);
+	const [enlargedIndex, setEnlargedIndex] = useState<number | null>(null);
 
 	const previewMedia =
 		project.gallery.length > 0
@@ -123,17 +123,8 @@ export const ProjectPreview = ({ project, onClose }: ProjectPreviewProps) => {
 					},
 				];
 
-	const goToIndex = (index: number) => {
-		setActiveIndex(getWrappedIndex(index, previewMedia.length));
-	};
-
-	const goToPrevious = () => {
-		goToIndex(activeIndex - 1);
-	};
-
-	const goToNext = () => {
-		goToIndex(activeIndex + 1);
-	};
+	const enlargedItem =
+		enlargedIndex !== null ? previewMedia[enlargedIndex] : null;
 
 	useEffect(() => {
 		closeButtonRef.current?.focus();
@@ -154,15 +145,18 @@ export const ProjectPreview = ({ project, onClose }: ProjectPreviewProps) => {
 			'keydown',
 			(event) => {
 				if (event.key === 'Escape') {
-					onClose();
-					return;
+					if (enlargedIndex !== null) {
+						setEnlargedIndex(null);
+					} else {
+						onClose();
+					}
 				}
 			},
 			{ signal: abortController.signal },
 		);
 
 		return () => abortController.abort();
-	}, [onClose]);
+	}, [enlargedIndex, onClose]);
 
 	useEffect(() => {
 		const previousBodyOverflow = document.body.style.overflow;
@@ -177,10 +171,6 @@ export const ProjectPreview = ({ project, onClose }: ProjectPreviewProps) => {
 		}
 
 		return () => {
-			if (wheelLockTimeoutRef.current) {
-				window.clearTimeout(wheelLockTimeoutRef.current);
-			}
-
 			document.body.style.overflow = previousBodyOverflow;
 			document.body.style.paddingRight = previousBodyPaddingRight;
 		};
@@ -196,191 +186,139 @@ export const ProjectPreview = ({ project, onClose }: ProjectPreviewProps) => {
 				} as React.CSSProperties
 			}
 		>
-			<button
-				type="button"
-				onClick={onClose}
-				aria-label={`Close ${project.name} preview`}
+			<div
 				className={classNames(
-					'bg-background/65 absolute inset-0 h-full w-full backdrop-blur-md transition-opacity',
+					'bg-background/65 absolute inset-0 h-full w-full overflow-y-auto overscroll-contain backdrop-blur-md transition-opacity duration-300',
 					{
 						'opacity-100': isVisible,
 						'opacity-0': !isVisible,
 					},
 				)}
-			/>
+				onClick={(event) => {
+					if (event.target === event.currentTarget) {
+						onClose();
+					}
+				}}
+			>
+				<div
+					className="mx-auto flex w-full max-w-2xl flex-col gap-4 px-4 pt-20 pb-40 md:gap-6 md:px-6 md:pt-24 md:pb-48"
+					onClick={(event) => {
+						if (event.target === event.currentTarget) {
+							onClose();
+						}
+					}}
+				>
+					{previewMedia.map((mediaItem, index) => {
+						const mediaLabel = getMediaItemLabel(
+							mediaItem,
+							project.name,
+							index,
+						);
+
+						return (
+							<button
+								key={`${mediaItem.type}-${mediaItem.src}-${index}`}
+								type="button"
+								onClick={() => setEnlargedIndex(index)}
+								aria-label={`Enlarge ${mediaLabel}`}
+								className="group relative block w-full cursor-zoom-in"
+							>
+								<GalleryMedia
+									mediaItem={mediaItem}
+									label={mediaLabel}
+								/>
+							</button>
+						);
+					})}
+				</div>
+			</div>
 
 			<button
 				ref={closeButtonRef}
 				type="button"
 				onClick={onClose}
-				className={classNames(
-					'bg-background text-foreground dark:bg-foreground dark:text-background border-foreground/25 fixed top-8 right-8 z-50 flex cursor-pointer items-center gap-2 rounded-full border p-2 text-sm transition-all hover:scale-110 hover:rotate-12 active:scale-95',
-				)}
+				aria-label={`Close ${project.name} preview`}
+				className="bg-background text-foreground dark:bg-foreground dark:text-background border-foreground/25 absolute top-8 right-8 z-40 flex cursor-pointer items-center gap-2 rounded-full border p-2 text-sm transition-all hover:scale-110 hover:rotate-12 active:scale-95"
 			>
 				<X className="h-6 w-6" />
 			</button>
 
-			<div className="relative h-full w-full">
-				<div className="m-auto flex h-full w-full max-w-6xl flex-col items-center justify-center gap-6 md:px-0 md:py-12">
-					<div className="flex w-full flex-col items-center gap-6">
-						<div className="relative aspect-square max-h-[70vh] w-full overflow-hidden select-none max-md:-translate-y-12 md:aspect-3/2 md:max-h-[50vh]">
-							{previewMedia.map((mediaItem, index) => {
-								const relativePosition = getRelativeCarouselPosition(
-									index,
-									activeIndex,
-									previewMedia.length,
-								);
-								const visibilityDistance = Math.abs(relativePosition);
-								const isPanelVisible = visibilityDistance <= 1.25;
-								const prominence = Math.max(
-									0,
-									1 - Math.min(visibilityDistance, 1),
-								);
-								const scale = 0.68 + prominence * 0.32;
-								const opacity = 0.2 + prominence * 0.8;
-								const width = `${40 + prominence * 40}%`;
-								const zIndex = 10 + Math.round(prominence * 10);
-								const isActive = index === activeIndex;
-								const mediaLabel = getMediaItemLabel(
-									mediaItem,
-									project.name,
-									index,
-								);
-
-								return (
-									<div
-										key={`${mediaItem.type}-${mediaItem.src}-${index}`}
-										className={classNames(
-											'absolute top-1/2 left-1/2 flex aspect-square max-h-full items-center justify-center transition-[transform,opacity,width,filter] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] md:aspect-3/2 md:max-h-[50vh]',
-											{
-												'pointer-events-none': !isActive,
-												invisible: !isPanelVisible,
-											},
-										)}
-										style={{
-											width,
-											opacity,
-											zIndex,
-											filter: `saturate(${0.7 + prominence * 0.3})`,
-											transform: `translate(calc(-50% + ${relativePosition * 86}%), -50%) scale(${scale})`,
-											willChange: 'transform, opacity, width',
-										}}
+			<div
+				className={classNames(
+					'pointer-events-none absolute right-0 bottom-6 left-0 z-40 flex justify-center px-4 transition-opacity duration-300 md:bottom-8',
+					{
+						'opacity-100': isVisible,
+						'opacity-0': !isVisible,
+					},
+				)}
+			>
+				<Link
+					className="group pointer-events-auto"
+					target="_blank"
+					href={project.path}
+					style={
+						{
+							'--background': project.secondaryColor,
+							'--foreground': project.primaryColor,
+						} as React.CSSProperties
+					}
+				>
+					<div className="flex items-center gap-8 rounded-4xl bg-(--background) px-6 py-4 pr-4 text-(--foreground) shadow-md transition-all group-hover:scale-105 group-hover:shadow-xl">
+						<div className="flex flex-col gap-0.5">
+							<h4 className="leading-none font-bold">{project.name}</h4>
+							<p className="max-w-[12.5rem] overflow-hidden text-sm leading-none font-normal overflow-ellipsis whitespace-nowrap">
+								{project.prettyPath.map((part, i) => (
+									<span
+										className="first:opacity-75"
+										key={i}
 									>
-										<div className="relative flex h-full w-full items-center justify-center overflow-hidden">
-											{renderMediaItem({
-												mediaItem,
-												label: mediaLabel,
-												isActive,
-											})}
-										</div>
-									</div>
-								);
-							})}
-
-							{previewMedia.length > 1 ? (
-								<>
-									<button
-										type="button"
-										onClick={goToPrevious}
-										aria-label="Show previous preview"
-										className="bg-foreground text-background absolute top-1/2 left-4 z-30 flex h-11 w-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full transition-transform hover:scale-105 active:scale-95"
-									>
-										<ChevronLeft className="pointer-events-none h-6 w-6" />
-									</button>
-									<button
-										type="button"
-										onClick={goToNext}
-										aria-label="Show next preview"
-										className="bg-foreground text-background absolute top-1/2 right-4 z-30 flex h-11 w-11 -translate-y-1/2 cursor-pointer items-center justify-center rounded-full transition-transform hover:scale-105 active:scale-95"
-									>
-										<ChevronRight className="pointer-events-none h-6 w-6" />
-									</button>
-								</>
-							) : null}
+										{part}
+									</span>
+								))}
+							</p>
 						</div>
 
-						<div className="flex w-full max-w-3xl items-center justify-center gap-3 overflow-x-auto px-2 py-1 max-md:-translate-y-12 md:px-0">
-							{previewMedia.map((mediaItem, index) => {
-								const isActive = index === activeIndex;
-								const mediaLabel = getMediaItemLabel(
-									mediaItem,
+						<span className="rounded-full bg-(--foreground) p-3 text-(--background) transition-all group-hover:scale-110">
+							<ExternalLink className="h-4 w-4" />
+						</span>
+					</div>
+				</Link>
+			</div>
+
+			{enlargedItem && enlargedIndex !== null ? (
+				<div className="absolute inset-0 z-50">
+					<button
+						type="button"
+						onClick={() => setEnlargedIndex(null)}
+						aria-label="Minimise preview"
+						tabIndex={-1}
+						className="bg-background/85 absolute inset-0 h-full w-full cursor-zoom-out backdrop-blur-md"
+					/>
+
+					<button
+						type="button"
+						onClick={() => setEnlargedIndex(null)}
+						aria-label="Minimise preview"
+						className="bg-background text-foreground dark:bg-foreground dark:text-background border-foreground/25 absolute top-8 right-8 z-10 flex cursor-pointer items-center gap-2 rounded-full border p-2 text-sm transition-all hover:scale-110 hover:rotate-12 active:scale-95"
+					>
+						<X className="h-6 w-6" />
+					</button>
+
+					<div className="pointer-events-none absolute inset-0 flex items-center justify-center p-4 md:p-12">
+						<div className="pointer-events-auto flex max-h-full w-auto max-w-full items-center justify-center">
+							<GalleryMedia
+								mediaItem={enlargedItem}
+								label={getMediaItemLabel(
+									enlargedItem,
 									project.name,
-									index,
-								);
-
-								return (
-									<button
-										key={`thumbnail-${mediaItem.type}-${mediaItem.src}-${index}`}
-										type="button"
-										onClick={() => goToIndex(index)}
-										aria-label={`Show ${mediaLabel}`}
-										aria-pressed={isActive}
-										className={classNames(
-											'group relative shrink-0 cursor-pointer overflow-hidden rounded-[1.4rem] transition-all duration-300 ease-out',
-											{
-												'ring-primary w-14 ring-3 md:w-20': isActive,
-												'w-12 opacity-65 hover:opacity-100 md:w-16': !isActive,
-											},
-										)}
-									>
-										<div className="relative aspect-square overflow-hidden rounded-[1.4rem] bg-black/10">
-											{renderMediaItem({
-												mediaItem,
-												label: mediaLabel,
-												isActive,
-												isThumbnail: true,
-											})}
-										</div>
-										<div className="from-background/10 to-background/55 absolute inset-0 bg-gradient-to-t" />
-									</button>
-								);
-							})}
-						</div>
-
-						<Link
-							className={classNames(
-								'relative z-10 transition-transform duration-200 ease-out max-md:fixed max-md:bottom-4',
-							)}
-							target="_blank"
-							href={project.path}
-							style={
-								{
-									'--background': project.secondaryColor,
-									'--foreground': project.primaryColor,
-								} as React.CSSProperties
-							}
-						>
-							<div
-								className={classNames(
-									'flex items-center gap-8 rounded-4xl bg-(--background) px-6 py-4 pr-4 text-(--foreground) shadow-md transition-all group-hover:scale-105 group-hover:shadow-xl md:mt-8 md:translate-x-2',
+									enlargedIndex,
 								)}
-							>
-								<div className="flex flex-col gap-0.5">
-									<h4 className="leading-none font-bold">{project.name}</h4>
-									<p className="max-w-[12.5rem] overflow-hidden text-sm leading-none font-normal overflow-ellipsis whitespace-nowrap">
-										{project.prettyPath.map((part, i) => (
-											<span
-												className="first:opacity-75"
-												key={i}
-											>
-												{part}
-											</span>
-										))}
-									</p>
-								</div>
-
-								<span
-									className={classNames(
-										'rounded-full bg-(--foreground) p-3 text-(--background) transition-all group-hover:scale-110',
-									)}
-								>
-									<ExternalLink className="h-4 w-4" />
-								</span>
-							</div>
-						</Link>
+								isEnlarged
+							/>
+						</div>
 					</div>
 				</div>
-			</div>
+			) : null}
 		</div>,
 		document.body,
 	);
