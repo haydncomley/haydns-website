@@ -1,8 +1,15 @@
 'use client';
 
 import classNames from 'classnames';
-import { ArrowRight, ExternalLink } from 'lucide-react';
+import {
+	ArrowRight,
+	BadgeCheck,
+	Gamepad2,
+	TestTubeDiagonal,
+} from 'lucide-react';
 import React, { useEffect, useRef, useState } from 'react';
+
+import type { ProjectCategory } from '~/lib/types';
 
 export type ProjectCardProps = {
 	title: string;
@@ -14,6 +21,7 @@ export type ProjectCardProps = {
 	secondaryColor: string;
 	onOpen: () => void;
 	align?: 'start' | 'end';
+	category: ProjectCategory;
 };
 
 export const ProjectCard = ({
@@ -26,6 +34,7 @@ export const ProjectCard = ({
 	secondaryColor,
 	onOpen,
 	align = 'start',
+	category,
 }: ProjectCardProps) => {
 	const foreground = primaryColor;
 	const background = secondaryColor;
@@ -285,6 +294,32 @@ export const ProjectCard = ({
 								<ArrowRight className="h-4 w-4" />
 							)} */}
 						</span>
+					</div>
+				</div>
+				{/* Icons */}
+				<div
+					style={titleLayerStyle}
+					className={classNames(
+						'absolute translate-y-full transition-all max-md:hidden',
+						{
+							'right-6 bottom-8 group-hover:right-20 group-hover:bottom-2':
+								align === 'start',
+							'bottom-6 left-12 group-hover:bottom-0 group-hover:left-20':
+								align === 'end',
+						},
+					)}
+				>
+					<div
+						className={classNames(
+							'flex h-10 w-10 items-center justify-center rounded-full bg-(--foreground) text-(--background) shadow-md transition-all group-hover:scale-90 group-hover:bg-(--background) group-hover:text-(--foreground)',
+							{
+								'-rotate-12': align === 'start',
+							},
+						)}
+					>
+						{category === 'games' ? <Gamepad2 /> : null}
+						{category === 'experiments' ? <TestTubeDiagonal /> : null}
+						{category === 'projects' ? <BadgeCheck /> : null}
 					</div>
 				</div>
 				{/* Description */}

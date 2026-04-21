@@ -3,10 +3,10 @@ import { aiStreamAssistantProject } from './ai-stream-assistant';
 import { chatgptCloneProject } from './chatgpt-clone';
 import { dailyWordGameProject } from './daily-word-game';
 import { gamingDashboardProject } from './gaming-dashboard';
+import { getCardsProject } from './get-cards';
 import { marketingPortfolioProject } from './marketing-portfolio';
 import { numberChainProject } from './number-chain';
 import { physicsTypeProject } from './physics-type';
-import { portfolioWebsiteProject } from './portfolio-website';
 import { samPlantProject } from './sam-plant';
 import { tubeGameProject } from './tube-game';
 import { vinylViewerProject } from './vinyl-viewer';
@@ -30,17 +30,17 @@ export const isProjectCategory = (value: string): value is ProjectCategory =>
 	ALL_PROJECT_CATEGORIES.includes(value as ProjectCategory);
 
 export const PROJECTS = [
-	aiStreamAssistantProject,
 	gamingDashboardProject,
-	tubeGameProject,
+	aiStreamAssistantProject,
+	getCardsProject,
 	samPlantProject,
-	dailyWordGameProject,
+	tubeGameProject,
 	marketingPortfolioProject,
+	dailyWordGameProject,
 	numberChainProject,
 	physicsTypeProject,
 	chatgptCloneProject,
 	vinylViewerProject,
-	// portfolioWebsiteProject,
 ] as const;
 
 export type ProjectSlug = (typeof PROJECTS)[number]['slug'];

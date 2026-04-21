@@ -5,8 +5,8 @@ export const dailyWordGameProject = createProject({
 	name: 'Daily Word Game',
 	path: 'https://cipherwords.io',
 	prettyPath: ['www.', 'cipherwords.io'],
-	primaryColor: '#668bf9',
-	secondaryColor: '#102b56',
+	primaryColor: '#ffe3b9',
+	secondaryColor: '#f5a320',
 	categories: ['games'],
 	description: (
 		<>

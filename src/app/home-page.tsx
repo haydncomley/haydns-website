@@ -161,6 +161,7 @@ export const HomePage = ({
 								secondaryColor={project.secondaryColor}
 								title={project.name}
 								videoUrl={project.previewVideoSrc}
+								category={project.categories[0]}
 							/>
 						</ProjectRow>
 					);

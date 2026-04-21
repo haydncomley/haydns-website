@@ -5,8 +5,8 @@ export const tubeGameProject = createProject({
 	name: 'Tube Game',
 	path: 'https://tube-game.vercel.app/',
 	prettyPath: ['www.', 'tube-game.', 'vercel.app'],
-	primaryColor: '#ffffff',
-	secondaryColor: '#203682',
+	primaryColor: '#9ab1fe',
+	secondaryColor: '#1c2a5c',
 	categories: ['games'],
 	description: (
 		<>

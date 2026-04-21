@@ -245,7 +245,7 @@ export const ProjectPreview = ({ project, onClose }: ProjectPreviewProps) => {
 
 			<div
 				className={classNames(
-					'pointer-events-none absolute right-0 bottom-6 left-0 z-40 flex justify-center px-4 transition-opacity duration-300 md:bottom-8',
+					'pointer-events-none absolute right-0 bottom-6 left-0 z-40 flex justify-end px-4 transition-opacity duration-300',
 					{
 						'opacity-100': isVisible,
 						'opacity-0': !isVisible,

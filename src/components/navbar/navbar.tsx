@@ -1,7 +1,14 @@
 'use client';
 
 import classNames from 'classnames';
-import { Eye, EyeClosed, Moon, Sun } from 'lucide-react';
+import {
+	BadgeCheck,
+	EyeClosed,
+	Gamepad2,
+	Moon,
+	Sun,
+	TestTubeDiagonal,
+} from 'lucide-react';
 import Image from 'next/image';
 import {
 	type CSSProperties,
@@ -502,11 +509,16 @@ export const Navbar = ({ activeFilters, onToggleFilter }: NavbarProps) => {
 										type="button"
 									>
 										{filter.label}
-										{isActive ? (
-											<Eye className="h-4 w-4" />
-										) : (
-											<EyeClosed className="h-4 w-4" />
-										)}
+										{isActive && filter.value === 'games' ? (
+											<Gamepad2 className="h-4 w-4" />
+										) : null}
+										{isActive && filter.value === 'experiments' ? (
+											<TestTubeDiagonal className="h-4 w-4" />
+										) : null}
+										{isActive && filter.value === 'projects' ? (
+											<BadgeCheck className="h-4 w-4" />
+										) : null}
+										{!isActive ? <EyeClosed className="h-4 w-4" /> : null}
 									</button>
 								</Fragment>
 							);
