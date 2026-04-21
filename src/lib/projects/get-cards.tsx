@@ -10,9 +10,10 @@ export const getCardsProject = createProject({
 	categories: ['games'],
 	description: (
 		<>
-			This was a simple project on the backburner for a while,{' '}
-			<b>simply just guess London tube lines along a commute</b>. Either pick a
-			random line or create your own commute and share it with your friends.
+			I made this <b>drinking game app</b> in order to have fun with people we
+			met <b>while travelling</b>. This also came in handy when joining{' '}
+			<b>university</b> as it was a{' '}
+			<b>great icebreaker and way to get to know new people.</b>
 		</>
 	),
 	gallery: [
