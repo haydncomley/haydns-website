@@ -31,5 +31,10 @@ export const liquidGlassProject = createProject({
 			src: '/modules/liquid-glass/cover.webm',
 			title: 'Liquid Glass Navigation Bar',
 		},
+		{
+			type: 'video',
+			src: '/modules/liquid-glass/android.webm',
+			title: 'Liquid Glass Demo on Android Chrome',
+		},
 	],
 });
