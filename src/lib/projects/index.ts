@@ -4,6 +4,7 @@ import { chatgptCloneProject } from './chatgpt-clone';
 import { dailyWordGameProject } from './daily-word-game';
 import { gamingDashboardProject } from './gaming-dashboard';
 import { getCardsProject } from './get-cards';
+import { liquidGlassProject } from './liquid-glass-web-demo';
 import { marketingPortfolioProject } from './marketing-portfolio';
 import { numberChainProject } from './number-chain';
 import { physicsTypeProject } from './physics-type';
@@ -33,6 +34,7 @@ export const PROJECTS = [
 	gamingDashboardProject,
 	aiStreamAssistantProject,
 	getCardsProject,
+	liquidGlassProject,
 	samPlantProject,
 	tubeGameProject,
 	marketingPortfolioProject,
