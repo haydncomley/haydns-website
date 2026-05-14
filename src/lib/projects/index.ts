@@ -9,6 +9,7 @@ import { marketingPortfolioProject } from './marketing-portfolio';
 import { numberChainProject } from './number-chain';
 import { physicsTypeProject } from './physics-type';
 import { samPlantProject } from './sam-plant';
+import { travelAppProject } from './travel-app';
 import { tubeGameProject } from './tube-game';
 import { vinylViewerProject } from './vinyl-viewer';
 
@@ -31,6 +32,7 @@ export const isProjectCategory = (value: string): value is ProjectCategory =>
 	ALL_PROJECT_CATEGORIES.includes(value as ProjectCategory);
 
 export const PROJECTS = [
+	travelAppProject,
 	gamingDashboardProject,
 	aiStreamAssistantProject,
 	getCardsProject,
