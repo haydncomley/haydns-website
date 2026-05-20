@@ -9,6 +9,7 @@ import { marketingPortfolioProject } from './marketing-portfolio';
 import { numberChainProject } from './number-chain';
 import { physicsTypeProject } from './physics-type';
 import { samPlantProject } from './sam-plant';
+import { timeBetweenProject } from './time-between';
 import { travelAppProject } from './travel-app';
 import { tubeGameProject } from './tube-game';
 import { vinylViewerProject } from './vinyl-viewer';
@@ -33,6 +34,7 @@ export const isProjectCategory = (value: string): value is ProjectCategory =>
 
 export const PROJECTS = [
 	travelAppProject,
+	timeBetweenProject,
 	gamingDashboardProject,
 	aiStreamAssistantProject,
 	getCardsProject,
