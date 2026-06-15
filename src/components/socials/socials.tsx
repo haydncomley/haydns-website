@@ -18,7 +18,7 @@ const SOCIALS = [
 	},
 	{
 		label: 'LinkedIn',
-		href: 'https://www.linkedin.com/in/haydncomley',
+		href: 'https://www.linkedin.com/in/haydn-comley/',
 		Logo: LinkedInLogo,
 		brandColor: '#0A66C2',
 	},
