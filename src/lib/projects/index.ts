@@ -47,7 +47,7 @@ export const PROJECTS = [
 	dailyWordGameProject,
 	numberChainProject,
 	physicsTypeProject,
-	chatgptCloneProject,
+	// chatgptCloneProject,
 	vinylViewerProject,
 ] as const;
 
