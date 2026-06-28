@@ -3,23 +3,29 @@
 import { usePathname, useRouter } from 'next/navigation';
 import { startTransition, useEffect, useRef, useState } from 'react';
 
+import { LatestVideo } from '~/components/latest-video';
 import { Navbar } from '~/components/navbar';
 import { ProjectCard } from '~/components/project-card';
 import { ProjectPreview } from '~/components/project-preview';
 import { ProjectRow } from '~/components/project-row';
 import { ALL_PROJECT_CATEGORIES, PROJECTS } from '~/lib/projects';
 import type { Project, ProjectCategory } from '~/lib/types';
+import type { LatestVideo as LatestVideoType } from '~/lib/youtube';
 
 const PARALLAX_SPEED = 0.5; // Background scrolls at this rate relative to content
 
 export type HomePageProps = {
 	initialActiveFilters: ProjectCategory[];
 	initialSelectedProjectSlug: Project['slug'] | null;
+	latestVideo: LatestVideoType | null;
+	isLatestVideoDismissed: boolean;
 };
 
 export const HomePage = ({
 	initialActiveFilters,
 	initialSelectedProjectSlug,
+	latestVideo,
+	isLatestVideoDismissed,
 }: HomePageProps) => {
 	const mainRef = useRef<HTMLElement>(null);
 	const pathname = usePathname();
@@ -123,7 +129,7 @@ export const HomePage = ({
 		<>
 			<main
 				ref={mainRef}
-				className="flex min-h-full w-full flex-col items-center overflow-hidden pb-20"
+				className="flex min-h-full w-full max-w-screen translate-[0px] flex-col items-center overflow-hidden overflow-x-hidden pb-20"
 				style={{
 					backgroundColor: 'var(--background)',
 					backgroundImage:
@@ -166,14 +172,21 @@ export const HomePage = ({
 						</ProjectRow>
 					);
 				})}
-			</main>
 
-			{selectedProject ? (
-				<ProjectPreview
-					project={selectedProject}
-					onClose={handleCloseProject}
-				/>
-			) : null}
+				{latestVideo ? (
+					<LatestVideo
+						video={latestVideo}
+						initiallyDismissed={isLatestVideoDismissed}
+					/>
+				) : null}
+
+				{selectedProject ? (
+					<ProjectPreview
+						project={selectedProject}
+						onClose={handleCloseProject}
+					/>
+				) : null}
+			</main>
 		</>
 	);
 };
