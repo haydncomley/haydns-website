@@ -1,0 +1,17 @@
+.swingIn {
+	animation: swingIn 0.4s 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@keyframes swingIn {
+	0% {
+		/* transform: rotate(-15deg); */
+		translate: 5rem 0;
+		rotate: 5deg;
+		opacity: 0;
+	}
+	100% {
+		/* transform: rotate(0deg); */
+		translate: 0 0;
+		opacity: 1;
+	}
+}

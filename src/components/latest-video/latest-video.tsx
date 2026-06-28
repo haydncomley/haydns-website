@@ -1,7 +1,7 @@
 'use client';
 
 import classNames from 'classnames';
-import { Play, X } from 'lucide-react';
+import { X } from 'lucide-react';
 import { useState } from 'react';
 
 import {
@@ -9,6 +9,8 @@ import {
 	LATEST_VIDEO_COOKIE_NAME,
 	type LatestVideo as LatestVideoType,
 } from '~/lib/youtube';
+
+import styles from './latest-video.module.css';
 
 type LatestVideoProps = {
 	video: LatestVideoType;
@@ -36,7 +38,8 @@ export const LatestVideo = ({
 		<div
 			className={classNames(
 				// Desktop only — tilted card popping off the right side of the page.
-				'group absolute top-72 -right-4 z-40 hidden w-92 origin-right rotate-2 transition-transform hover:scale-105 lg:block',
+				'group absolute top-72 -right-4 z-40 hidden w-80 origin-right rotate-2 transition-transform hover:scale-105 lg:block',
+				styles.swingIn,
 			)}
 		>
 			<a
@@ -67,7 +70,7 @@ export const LatestVideo = ({
 				type="button"
 				aria-label="Hide latest video"
 				onClick={handleDismiss}
-				className="bg-foreground text-background border-background absolute -top-3 right-6 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border-2 transition-transform hover:scale-110 hover:rotate-12 active:scale-95"
+				className="bg-foreground text-background border-background absolute -top-3 right-6 flex h-7 w-7 cursor-pointer items-center justify-center rounded-full border-2 transition-transform hover:scale-120 hover:rotate-12 active:scale-95"
 			>
 				<X className="h-4 w-4" />
 			</button>
